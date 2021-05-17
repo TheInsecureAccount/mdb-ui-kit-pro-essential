@@ -331,8 +331,8 @@ class Stepper {
     }
 
     const inputs = this.activeStep.querySelectorAll('.form-outline');
-
-    if (inputs.length) {
+    const inputNotches = SelectorEngine.find('.form-notch', inputs[0]);
+    if (inputs.length && inputNotches.length < 1) {
       inputs.forEach((formOutline) => {
         new mdb.Input(formOutline).init();
       });

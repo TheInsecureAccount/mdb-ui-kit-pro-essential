@@ -23,7 +23,14 @@ import {
 } from './utils';
 import FocusTrap from '../../mdb/util/focusTrap';
 import SelectorEngine from '../../mdb/dom/selector-engine';
-import { UP_ARROW, DOWN_ARROW, LEFT_ARROW, RIGHT_ARROW, ESCAPE } from '../../mdb/util/keycodes';
+import {
+  UP_ARROW,
+  DOWN_ARROW,
+  LEFT_ARROW,
+  RIGHT_ARROW,
+  ESCAPE,
+  ENTER,
+} from '../../mdb/util/keycodes';
 
 /**
  * ------------------------------------------------------------------------
@@ -78,7 +85,6 @@ const Default = {
   clearLabel: 'Clear',
   closeModalOnBackdropClick: true,
   closeModalOnMinutesClick: false,
-  closeOnClickClearBtn: true,
   defaultTime: '',
   disabled: false,
   enableValidation: true,
@@ -113,7 +119,6 @@ const DefaultType = {
   cancelLabel: 'string',
   clearLabel: 'string',
   closeModalOnBackdropClick: 'boolean',
-  closeOnClickClearBtn: 'boolean',
   closeModalOnMinutesClick: 'boolean',
   disabled: 'boolean',
   enableValidation: 'boolean',
@@ -271,6 +276,7 @@ class Timepicker {
         this._getValidate('keydown change blur focus');
       }
       this._handleOpen();
+      this._listenToToggleKeydown();
     }
   }
 
@@ -287,6 +293,7 @@ class Timepicker {
     this._focusTrap = null;
 
     EventHandler.off(this._document, 'click', `[data-mdb-toggle='${this.toggleElement}']`);
+    EventHandler.off(this._element, 'keydown', `[data-mdb-toggle='${this.toggleElement}']`);
   }
 
   // private
@@ -677,6 +684,15 @@ class Timepicker {
     return scrollbarWidth;
   }
 
+  _listenToToggleKeydown() {
+    EventHandler.on(this._element, 'keydown', `[data-mdb-toggle='${this.toggleElement}']`, (e) => {
+      if (e.keyCode === ENTER) {
+        e.preventDefault();
+        EventHandler.trigger(this.elementToggle, 'click');
+      }
+    });
+  }
+
   _handleOpen() {
     EventHandlerMulti.on(
       this._element,
@@ -924,7 +940,7 @@ class Timepicker {
       'click',
       `.${WRAPPER_CLASS}, .${BUTTON_CANCEL_CLASS}, .${BUTTON_CLEAR_CLASS}`,
       ({ target }) => {
-        const { closeOnClickClearBtn, closeModalOnBackdropClick } = this._options;
+        const { closeModalOnBackdropClick } = this._options;
 
         const runRemoveFunction = () => {
           Manipulator.addStyle(this.elementToggle, {
@@ -934,14 +950,30 @@ class Timepicker {
           this._removeModal();
           this._focusTrap.disable();
           this._focusTrap = null;
+
+          if (this.elementToggle) {
+            this.elementToggle.focus();
+          } else if (this.input) {
+            this.input.focus();
+          }
         };
 
         if (Manipulator.hasClass(target, BUTTON_CLEAR_CLASS)) {
           this.input.value = '';
           Manipulator.removeClass(this.input, 'active');
-          if (closeOnClickClearBtn) {
-            runRemoveFunction();
+
+          let checkInputValue;
+
+          if (takeValue(this.input)[0] === '') {
+            checkInputValue = ['12', '00', 'PM'];
+          } else {
+            checkInputValue = takeValue(this.input);
           }
+
+          const [hour, minute, format] = checkInputValue;
+          this._setTipsAndTimesDependOnInputValue('12', '00');
+          this._setActiveClassToTipsOnOpen(hour, minute, format);
+          this._hour.click();
         } else if (Manipulator.hasClass(target, BUTTON_CANCEL_CLASS)) {
           runRemoveFunction();
         } else if (Manipulator.hasClass(target, WRAPPER_CLASS) && closeModalOnBackdropClick) {

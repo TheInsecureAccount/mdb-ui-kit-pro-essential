@@ -376,12 +376,6 @@ class Datetimepicker {
       this._updateInputValue();
 
       EventHandler.trigger(this._element, EVENT_CLOSE);
-
-      if (!this._dateValue) {
-        setTimeout(() => {
-          this._openDatePicker();
-        }, 400);
-      }
     });
   }
 

@@ -9,6 +9,7 @@ import EventHandler from '../mdb/dom/event-handler';
 import Data from '../mdb/dom/data';
 import Manipulator from '../mdb/dom/manipulator';
 import BSModal from '../bootstrap/mdb-prefix/modal';
+import { reset as scrollBarReset } from '../mdb/util/scrollbar';
 
 /**
  * ------------------------------------------------------------------------
@@ -161,12 +162,18 @@ class Modal extends BSModal {
     });
   }
 
-  _checkScrollbar() {
-    super._checkScrollbar();
+  _adjustDialog() {
+    super._adjustDialog();
     const isNonInvasiveModalOpen = document.body.classList.contains(NON_INVASIVE_CLASS);
 
     if (this._isNonInvasive || isNonInvasiveModalOpen) {
       this._isBodyOverflowing = false;
+    }
+
+    if (this._isNonInvasive) {
+      this._backdrop.hide();
+      this._resetAdjustments();
+      scrollBarReset();
     }
   }
 

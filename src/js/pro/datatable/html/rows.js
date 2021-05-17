@@ -13,8 +13,9 @@ const rows = ({ rows, columns, noFoundMessage, edit, selectable, loading }) => {
         const style = {};
 
         if (column.width) {
-          style['min-width'] = `${column.width}px`;
+          style['min-width'] = `${column.width - 1}px`;
           style['max-width'] = `${column.width}px`;
+          style.width = `${column.width}px`;
         }
         if (column.fixed) {
           const fixedOffset = columns

@@ -1106,6 +1106,7 @@ class Datepicker {
     const newDate = createDate(year, this.activeMonth, this.activeDay);
 
     this._activeDate = newDate;
+    this._selectedDate = newDate;
     this._selectYear(year);
   }
 
