@@ -74,6 +74,11 @@ const EVENT_OPEN = `open${EVENT_KEY}`;
 const EVENT_DATE_CHANGE = `dateChange${EVENT_KEY}`;
 const EVENT_CLICK_DATA_API = `click${EVENT_KEY}${DATA_API_KEY}`;
 
+const BACKDROP_OPEN_ANIMATION_CLASS = 'fade-in';
+const BACKDROP_CLOSE_ANIMATION_CLASS = 'fade-out';
+const CONTAINER_OPEN_ANIMATION_CLASS = 'fade-in';
+const CONTAINER_CLOSE_ANIMATION_CLASS = 'fade-out';
+
 const SELECTOR_DATEPICKER = '.datepicker';
 const SELECTOR_DATA_TOGGLE = '[data-mdb-toggle="datepicker"]';
 const SELECTOR_MODAL_CONTAINER = '.datepicker-modal-container';
@@ -383,6 +388,12 @@ class Datepicker {
     } else {
       this._openModal(backdrop, template);
     }
+
+    Manipulator.addClass(this.container, 'animation');
+    Manipulator.addClass(this.container, CONTAINER_OPEN_ANIMATION_CLASS);
+
+    Manipulator.addClass(backdrop, 'animation');
+    Manipulator.addClass(backdrop, BACKDROP_OPEN_ANIMATION_CLASS);
 
     this._setFocusTrap(this.container);
 
@@ -837,6 +848,9 @@ class Datepicker {
 
     this._removeDatepickerListeners();
 
+    Manipulator.addClass(this.container, 'animation');
+    Manipulator.addClass(this.container, CONTAINER_CLOSE_ANIMATION_CLASS);
+
     if (this._options.inline) {
       this._closeDropdown();
     } else {
@@ -855,15 +869,15 @@ class Datepicker {
 
   _closeDropdown() {
     const datepicker = SelectorEngine.findOne('.datepicker-dropdown-container');
+    setTimeout(() => {
+      if (datepicker) {
+        document.body.removeChild(datepicker);
+      }
 
-    if (datepicker) {
-      document.body.removeChild(datepicker);
-    }
-
-    if (this._popper) {
-      this._popper.destroy();
-    }
-
+      if (this._popper) {
+        this._popper.destroy();
+      }
+    }, 150);
     this._removeFocusTrap();
   }
 
@@ -871,11 +885,16 @@ class Datepicker {
     const backdrop = SelectorEngine.findOne('.datepicker-backdrop');
     const datepicker = SelectorEngine.findOne('.datepicker-modal-container');
 
+    Manipulator.addClass(backdrop, 'animation');
+    Manipulator.addClass(backdrop, BACKDROP_CLOSE_ANIMATION_CLASS);
+
     if (datepicker && backdrop) {
-      document.body.removeChild(backdrop);
-      document.body.removeChild(datepicker);
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      setTimeout(() => {
+        document.body.removeChild(backdrop);
+        document.body.removeChild(datepicker);
+        document.body.style.overflow = '';
+        document.body.style.paddingRight = '';
+      }, 150);
     }
   }
 

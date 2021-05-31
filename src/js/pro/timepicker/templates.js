@@ -16,7 +16,7 @@ export const getTimepickerTemplate = ({
   pmLabel,
 }) => {
   const normalTemplate = `<div id='${pickerID}' class='timepicker-wrapper h-100 d-flex align-items-center justify-content-center flex-column position-fixed'>
-               <div class="d-flex align-items-center justify-content-center flex-column shadow timepicker-container">
+               <div class="d-flex align-items-center justify-content-center flex-column timepicker-container">
                   <div class="d-flex flex-column timepicker-elements justify-content-around">
                   <div id='${headID}' class='timepicker-head d-flex flex-row align-items-center justify-content-center'
                   style='padding-right:${format24 ? 50 : 0}px'>
@@ -70,7 +70,7 @@ export const getTimepickerTemplate = ({
         </div>`;
 
   const inlineTemplate = `<div id='${pickerID}' class='timepicker-wrapper h-100 d-flex align-items-center justify-content-center flex-column timepicker-wrapper-inline'>
-               <div class="d-flex align-items-center justify-content-center flex-column shadow timepicker-container">
+               <div class="d-flex align-items-center justify-content-center flex-column timepicker-container">
                   <div class="d-flex flex-column timepicker-elements justify-content-around timepicker-elements-inline">
                   <div id='${headID}' class='timepicker-head d-flex flex-row align-items-center justify-content-center timepicker-head-inline'
                   style='padding-right:0px'>

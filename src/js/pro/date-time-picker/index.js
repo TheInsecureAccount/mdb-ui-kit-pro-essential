@@ -322,6 +322,10 @@ class Datetimepicker {
 
     this._listenToCancelClick();
 
+    if (this._options.inline && this._datepicker._isOpen) {
+      this.toggleButton.style.pointerEvents = 'none';
+    }
+
     EventHandler.one(this._datepicker._element, EVENT_CLOSE_DATEPICKER, () => {
       this._dateValue = this._datepicker._input.value;
       this._updateInputValue();
@@ -330,7 +334,12 @@ class Datetimepicker {
         this._cancel = false;
         return;
       }
+
       this._openTimePicker();
+
+      if (this._options.inline) {
+        this.toggleButton.style.pointerEvents = 'auto';
+      }
     });
 
     const CLOCK_BTN = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-button-toggle`, document.body);

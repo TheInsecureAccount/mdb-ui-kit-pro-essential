@@ -54,8 +54,9 @@ const CLOCK_INNER_CLASS = `${NAME}-clock-inner`;
 const CLOCK_WRAPPER_CLASS = `${NAME}-clock-wrapper`;
 const CURRENT_CLASS = `.${NAME}-current`;
 const CURRENT_INLINE_CLASS = `${NAME}-current-inline`;
+const WRAPPER_OPEN_ANIMATION_CLASS = 'fade-in';
+const WRAPPER_CLOSE_ANIMATION_CLASS = 'fade-out';
 
-const FADE_CLASS = 'fade';
 const HAND_CLASS = `${NAME}-hand-pointer`;
 const HOUR_CLASS = `${NAME}-hour`;
 const HOUR_MODE_CLASS = `${NAME}-hour-mode`;
@@ -68,7 +69,6 @@ const MIDDLE_DOT_CLASS = `${NAME}-middle-dot`;
 const MINUTE_CLASS = `${NAME}-minute`;
 const MODAL_CLASS = `${NAME}-modal`;
 const PM_CLASS = `${NAME}-pm`;
-const SHOW_CLASS = 'show';
 const TIPS_ELEMENT_CLASS = `${NAME}-tips-element`;
 const TIPS_HOURS_CLASS = `${NAME}-time-tips-hours`;
 const TIPS_INNER_ELEMENT_CLASS = `${NAME}-tips-inner-element`;
@@ -1779,16 +1779,13 @@ class Timepicker {
 
   _toggleBackdropAnimation(isToRemove = false) {
     if (isToRemove) {
-      setTimeout(() => {
-        Manipulator.removeClass(this._wrapper, SHOW_CLASS);
-      }, 150);
+      Manipulator.addClass(this._wrapper, 'animation');
+      Manipulator.addClass(this._wrapper, WRAPPER_CLOSE_ANIMATION_CLASS);
     } else {
-      Manipulator.addClass(this._wrapper, FADE_CLASS);
+      Manipulator.addClass(this._wrapper, 'animation');
+      Manipulator.addClass(this._wrapper, WRAPPER_OPEN_ANIMATION_CLASS);
 
-      setTimeout(() => {
-        Manipulator.addClass(this._wrapper, SHOW_CLASS);
-        if (!this._options.inline) Manipulator.addClass(this._clock, CLOCK_ANIMATION_CLASS);
-      }, 150);
+      if (!this._options.inline) Manipulator.addClass(this._clock, CLOCK_ANIMATION_CLASS);
     }
   }
 

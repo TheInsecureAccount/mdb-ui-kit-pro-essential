@@ -24,24 +24,24 @@ import Alert from './pro/alert';
 import Toast from './pro/toast';
 import Timepicker from './pro/timepicker';
 import Navbar from './pro/navbar';
-import InfiniteScroll from './pro/infiniteScroll';
-import LazyLoad from './pro/lazyLoad';
+import InfiniteScroll from './pro/infinite-scroll';
+import LazyLoad from './pro/lazy-load';
 import Datepicker from './pro/datepicker';
 import Popconfirm from './pro/popconfirm';
-import Datatable from './pro/datatable/index';
+import Datatable from './pro/datatable';
 import Stepper from './pro/stepper';
 import Sticky from './pro/sticky';
 import Select from './pro/select';
 import Touch from './pro/touch';
 import SmoothScroll from './pro/smooth-scroll';
-import PerfectScrollbar from './pro/perfectScrollbar';
-import Loading from './pro/loading-management/index';
+import PerfectScrollbar from './pro/perfect-scrollbar';
+import Loading from './pro/loading-management';
 import Autocomplete from './pro/autocomplete';
 import Modal from './pro/modal';
 import Clipboard from './pro/clipboard';
-import ChipsInput from './pro/chips/index';
-import MultiRangeSlider from './pro/multi-range/index';
-import Datetimepicker from './pro/dateTimePicker/date-time-picker';
+import ChipsInput from './pro/chips';
+import MultiRangeSlider from './pro/multi-range';
+import Datetimepicker from './pro/date-time-picker';
 
 export {
   // FREE

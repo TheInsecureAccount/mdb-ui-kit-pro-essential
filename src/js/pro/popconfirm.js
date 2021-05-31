@@ -162,7 +162,7 @@ class Popconfirm {
     const popover = element('div');
     const popconfirmTemplate = this._getPopconfirmTemplate();
     Manipulator.addClass(popover, 'popconfirm-popover');
-    Manipulator.addClass(popover, 'shadow-3');
+    Manipulator.addClass(popover, 'shadow-4');
     popover.id = this._uid;
     popover.innerHTML = popconfirmTemplate;
     return popover;
@@ -172,7 +172,7 @@ class Popconfirm {
     const modal = element('div');
     const popconfirmTemplate = this._getPopconfirmTemplate();
     Manipulator.addClass(modal, 'popconfirm-modal');
-    Manipulator.addClass(modal, 'shadow-3');
+    Manipulator.addClass(modal, 'shadow-4');
     modal.id = this._uid;
     modal.innerHTML = popconfirmTemplate;
     return modal;
