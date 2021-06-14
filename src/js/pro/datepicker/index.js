@@ -167,7 +167,7 @@ const DefaultType = {
   switchToMonthViewLabel: 'string',
   switchToDayViewLabel: 'string',
 
-  startDate: '(null|date)',
+  startDate: '(null|string|date)',
   startDay: 'number',
   format: 'string',
   view: 'string',
@@ -833,7 +833,7 @@ class Datepicker {
     if (this._input.value) {
       this._handleUserInput(this._input.value);
     } else if (this._options.startDate) {
-      this._activeDate = this._options.startDate;
+      this._activeDate = new Date(this._options.startDate);
     } else {
       this._activeDate = new Date();
     }

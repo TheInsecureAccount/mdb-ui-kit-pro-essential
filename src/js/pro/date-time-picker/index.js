@@ -335,7 +335,9 @@ class Datetimepicker {
         return;
       }
 
-      this._openTimePicker();
+      EventHandler.on(this._datepicker.container, 'click', () => {
+        this._openTimePicker();
+      });
 
       if (this._options.inline) {
         this.toggleButton.style.pointerEvents = 'auto';

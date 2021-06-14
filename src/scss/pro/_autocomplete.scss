@@ -3,6 +3,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
   &.active {
     transform: translateY(-1rem) translateY(0.1rem) scale(0.8);
   }
@@ -57,7 +58,7 @@
 }
 
 .autocomplete-dropdown-container {
-  z-index: 1050;
+  z-index: $zindex-autocomplete-dropdown-container;
 }
 
 .autocomplete-dropdown {

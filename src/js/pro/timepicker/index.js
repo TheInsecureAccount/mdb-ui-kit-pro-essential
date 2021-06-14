@@ -673,17 +673,6 @@ class Timepicker {
     }
   }
 
-  _getScrollbarWidth() {
-    // thx d.walsh
-    const scrollDiv = document.createElement('div');
-    scrollDiv.className = 'modal-scrollbar-measure';
-    document.body.appendChild(scrollDiv);
-    const scrollbarWidth = scrollDiv.getBoundingClientRect().width - scrollDiv.clientWidth;
-
-    document.body.removeChild(scrollDiv);
-    return scrollbarWidth;
-  }
-
   _listenToToggleKeydown() {
     EventHandler.on(this._element, 'keydown', `[data-mdb-toggle='${this.toggleElement}']`, (e) => {
       if (e.keyCode === ENTER) {
@@ -796,8 +785,9 @@ class Timepicker {
             });
 
             if (!checkBrowser() && hasVerticalScroll) {
+              const scrollHeight = '15px';
               Manipulator.addStyle(this._document.body, {
-                paddingRight: `${this._getScrollbarWidth()}px`,
+                paddingRight: scrollHeight,
               });
             }
           }
@@ -815,7 +805,7 @@ class Timepicker {
   _handleInlineClicks() {
     EventHandlerMulti.on(
       this._modal,
-      'click mousedown mouseup touchstart touchend',
+      'click mousedown mouseup touchstart touchend contextmenu',
       `.${ICON_UP_CLASS}, .${ICON_DOWN_CLASS}`,
       (e) => {
         const { target, type } = e;
@@ -827,7 +817,7 @@ class Timepicker {
           let minutes = count;
 
           if (minutes > 59) {
-            minutes = 1;
+            minutes = 0;
           } else if (minutes < 0) {
             minutes = 59;
           }
@@ -894,8 +884,9 @@ class Timepicker {
         if (Manipulator.hasClass(target, ICON_UP_CLASS)) {
           if (Manipulator.hasClass(target.parentNode, ICONS_HOUR_INLINE)) {
             if (type === 'mousedown' || type === 'touchstart') {
+              clearInterval(this._interval);
               this._interval = setInterval(addHours, 100);
-            } else if (type === 'mouseup' || type === 'touchend') {
+            } else if (type === 'mouseup' || type === 'touchend' || type === 'contextmenu') {
               clearInterval(this._interval);
             } else {
               addHours();
@@ -903,8 +894,9 @@ class Timepicker {
           } else {
             // eslint-disable-next-line no-lonely-if
             if (type === 'mousedown' || type === 'touchstart') {
+              clearInterval(this._interval);
               this._interval = setInterval(addMinutes, 100);
-            } else if (type === 'mouseup' || type === 'touchend') {
+            } else if (type === 'mouseup' || type === 'touchend' || type === 'contextmenu') {
               clearInterval(this._interval);
             } else {
               addMinutes();
@@ -913,6 +905,7 @@ class Timepicker {
         } else if (Manipulator.hasClass(target, ICON_DOWN_CLASS)) {
           if (Manipulator.hasClass(target.parentNode, ICONS_HOUR_INLINE)) {
             if (type === 'mousedown' || type === 'touchstart') {
+              clearInterval(this._interval);
               this._interval = setInterval(subHours, 100);
             } else if (type === 'mouseup' || type === 'touchend') {
               clearInterval(this._interval);
@@ -922,6 +915,7 @@ class Timepicker {
           } else {
             // eslint-disable-next-line no-lonely-if
             if (type === 'mousedown' || type === 'touchstart') {
+              clearInterval(this._interval);
               this._interval = setInterval(subMinutes, 100);
             } else if (type === 'mouseup' || type === 'touchend') {
               clearInterval(this._interval);

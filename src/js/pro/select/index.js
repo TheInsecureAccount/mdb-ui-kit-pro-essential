@@ -1218,7 +1218,11 @@ class Select {
 
   _selectByValue(value) {
     const correspondingOption = this.options.find((option) => option.value === value);
+    if (!correspondingOption) {
+      return false;
+    }
     correspondingOption.nativeOption.selected = true;
+    return true;
   }
 
   static jQueryInterface(config, options) {

@@ -13,13 +13,22 @@ const formatToAmPm = (date) => {
     hours = date.getHours();
     minutes = date.getMinutes();
     hours %= 12;
+    if (hours === 0) {
+      amOrPm = 'AM';
+    }
     hours = hours || 12;
-    amOrPm = hours >= 12 ? 'PM' : 'AM';
+
+    if (amOrPm === undefined) {
+      amOrPm = hours >= 12 ? 'PM' : 'AM';
+    }
     minutes = minutes < 10 ? `0${minutes}` : minutes;
   } else {
     [hours, minutes, amOrPm] = takeValue(date, false);
 
     hours %= 12;
+    if (hours === 0) {
+      amOrPm = 'AM';
+    }
     hours = hours || 12;
 
     if (amOrPm === undefined) {
