@@ -25,6 +25,7 @@
 @import './components/form-control-theme';
 @import './components/form-range-theme';
 @import './components/form-file-theme';
+@import './components/accordion-theme';
 @import './components/form-select-theme';
 @import './components/input-group-theme';
 @import './components/autocomplete-theme';
@@ -70,5 +71,6 @@
   @include mdb-loading-theme($theme);
   @include mdb-sidenav-theme($theme);
   @include mdb-stepper-theme($theme);
+  @include mdb-accordion-theme($theme);
   @include mdb-popconfirm-theme($theme);
 }

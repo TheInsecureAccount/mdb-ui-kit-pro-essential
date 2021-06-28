@@ -269,7 +269,7 @@ function getOptionContentTemplate(option, config) {
 
   content.appendChild(label);
 
-  if (option.secondaryText) {
+  if (option.secondaryText || typeof option.secondaryText === 'number') {
     content.appendChild(getSecondaryTextTemplate(option.secondaryText));
   }
 

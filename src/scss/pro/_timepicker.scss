@@ -1,5 +1,6 @@
 .timepicker {
   &-wrapper {
+    touch-action: none;
     z-index: $zindex-timepicker;
     opacity: 0;
     right: 0;

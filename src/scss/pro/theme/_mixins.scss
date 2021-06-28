@@ -33,6 +33,7 @@
 @import './components/loading-theme';
 @import './components/sidenav-theme';
 @import './components/stepper-theme';
+@import './components/accordion-theme';
 @import './components/popconfirm-theme';
 
 @mixin mdb-theme($theme) {
@@ -70,5 +71,6 @@
   @include mdb-loading-theme($theme);
   @include mdb-sidenav-theme($theme);
   @include mdb-stepper-theme($theme);
+  @include mdb-accordion-theme($theme);
   @include mdb-popconfirm-theme($theme);
 }

@@ -24,6 +24,7 @@
 @import '../components/form-range-theme';
 @import '../components/form-file-theme';
 @import '../components/input-group-theme';
+@import '../components/accordion-theme';
 @import '../components/loading-theme';
 
 @mixin mdb-theme($theme) {
@@ -44,6 +45,7 @@
   @include mdb-progress-theme($theme);
   @include mdb-ripple-theme($theme);
   @include mdb-scrollspy-theme($theme);
+  @include mdb-accordion-theme($theme);
   @include mdb-shadows-theme($theme);
   @include mdb-tables-theme($theme);
   @include mdb-tooltips-theme($theme);

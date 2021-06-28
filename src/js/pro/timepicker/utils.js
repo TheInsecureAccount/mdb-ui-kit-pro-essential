@@ -87,7 +87,7 @@ const toggleClassHandler = (event, classes) => {
 const findMousePosition = ({ clientX, clientY, touches }, object, isMobile = false) => {
   const { left, top } = object.getBoundingClientRect();
   let obj = {};
-  if (!isMobile) {
+  if (!isMobile || !touches) {
     obj = {
       x: clientX - left,
       y: clientY - top,

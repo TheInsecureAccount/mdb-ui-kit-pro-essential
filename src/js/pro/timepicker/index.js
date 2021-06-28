@@ -1444,7 +1444,6 @@ class Timepicker {
 
   _handleClockClick() {
     const clockWrapper = SelectorEngine.findOne(`.${CLOCK_WRAPPER_CLASS}`);
-
     EventHandlerMulti.on(
       document,
       'mousedown mouseup mousemove mouseleave mouseover touchstart touchmove touchend',
@@ -1499,7 +1498,7 @@ class Timepicker {
             ) {
               this._isMouseMove = true;
 
-              if (checkBrowser()) {
+              if (checkBrowser() && e.touches) {
                 xPos = e.touches[0].clientX;
                 yPos = e.touches[0].clientY;
                 elFromPoint = document.elementFromPoint(xPos, yPos);
@@ -1587,7 +1586,7 @@ class Timepicker {
             return;
           }
           const makeDegrees = () => {
-            if (checkBrowser()) {
+            if (checkBrowser() && degrees) {
               const { degrees: touchDegrees, hour: touchHours } = this._makeHourDegrees(
                 elFromPoint,
                 degrees,
@@ -1852,7 +1851,9 @@ class Timepicker {
 
   _makeHourDegrees = (target, degrees, hour) => {
     const { maxHour, minHour } = this._options;
-
+    if (!target) {
+      return;
+    }
     if (
       Manipulator.hasClass(target, CLOCK_INNER_CLASS) ||
       Manipulator.hasClass(target, TIPS_INNER_HOURS_CLASS) ||

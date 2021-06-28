@@ -1049,7 +1049,7 @@ class Datepicker {
     const dd = this._addLeadingZero(getDate(date));
     const ddd = this._options.weekdaysShort[getDayNumber(date)];
     const dddd = this._options.weekdaysFull[getDayNumber(date)];
-    const m = getMonth(date);
+    const m = getMonth(date) + 1;
     const mm = this._addLeadingZero(getMonth(date) + 1);
     const mmm = this._options.monthsShort[getMonth(date)];
     const mmmm = this._options.monthsFull[getMonth(date)];
@@ -1310,7 +1310,8 @@ class Datepicker {
         this._view,
         YEARS_IN_VIEW,
         this._options.min,
-        this._options.max
+        this._options.max,
+        this.lastYearInView
       )
     ) {
       this.previousButton.disabled = true;

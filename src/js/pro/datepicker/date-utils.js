@@ -159,11 +159,29 @@ export function isNextDateDisabled(activeDate, view, yearsInView, minDate, maxDa
   return maxDate && areDatesInSameView(activeDate, maxDate, view, yearsInView, minDate, maxDate);
 }
 
-export function isPreviousDateDisabled(activeDate, view, yearsInView, minDate, maxDate) {
-  return minDate && areDatesInSameView(activeDate, minDate, view, yearsInView, minDate, maxDate);
+export function isPreviousDateDisabled(
+  activeDate,
+  view,
+  yearsInView,
+  minDate,
+  maxDate,
+  lastYearInView
+) {
+  return (
+    minDate &&
+    areDatesInSameView(activeDate, minDate, view, yearsInView, minDate, maxDate, lastYearInView)
+  );
 }
 
-export function areDatesInSameView(date1, date2, view, yearsInView, minDate, maxDate) {
+export function areDatesInSameView(
+  date1,
+  date2,
+  view,
+  yearsInView,
+  minDate,
+  maxDate,
+  lastYearInView
+) {
   if (view === 'days') {
     return getYear(date1) === getYear(date2) && getMonth(date1) === getMonth(date2);
   }
@@ -173,12 +191,21 @@ export function areDatesInSameView(date1, date2, view, yearsInView, minDate, max
   }
 
   if (view === 'years') {
-    const startYear = getStartYear(yearsInView, minDate, maxDate);
+    let startYear = getStartYear(yearsInView, minDate, maxDate);
+    let result;
 
-    return (
-      Math.floor((getYear(date1) - startYear) / yearsInView) ===
-      Math.floor((getYear(date2) - startYear) / yearsInView)
-    );
+    if (lastYearInView) {
+      startYear = getStartYear(yearsInView, minDate);
+      result =
+        Math.floor((lastYearInView - startYear) / yearsInView) ===
+        Math.floor((getYear(date2) - startYear) / yearsInView);
+    } else {
+      result =
+        Math.floor((getYear(date1) - startYear) / yearsInView) ===
+        Math.floor((getYear(date2) - startYear) / yearsInView);
+    }
+
+    return result;
   }
 
   return false;

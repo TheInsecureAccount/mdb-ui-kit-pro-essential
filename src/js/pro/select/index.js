@@ -80,6 +80,7 @@ const SELECTOR_CLEAR_BUTTON = '.select-clear-btn';
 const SELECTOR_CUSTOM_CONTENT = '.select-custom-content';
 const SELECTOR_NO_RESULTS = '.select-no-results';
 const SELECTOR_FORM_OUTLINE = '.form-outline';
+const SELECTOR_TOGGLE = '[data-mdb-toggle]';
 
 const CLASS_NAME_INITIALIZED = 'select-initialized';
 const CLASS_NAME_OPEN = 'open';
@@ -117,6 +118,8 @@ class Select {
     this._input = null;
     this._label = SelectorEngine.next(this._element, SELECTOR_LABEL)[0];
     this._customContent = SelectorEngine.next(element, SELECTOR_CUSTOM_CONTENT)[0];
+    this._toggleButton = null;
+    this._elementToggle = null;
 
     this._wrapper = null;
     this._inputEl = null;
@@ -770,7 +773,9 @@ class Select {
     if (value) {
       this._input.value = value;
     } else {
-      this._input.value = '';
+      // prettier-ignore
+      // eslint-disable-next-line
+      this.multiple ? (this._input.value = '') : (this._input.value = this._optionsToRender[0].label);
     }
   }
 
@@ -1010,7 +1015,21 @@ class Select {
     const isDropdownContent =
       this._dropdownContainer && this._dropdownContainer.contains(event.target);
 
-    if (!isSelectContent && !isDropdown && !isDropdownContent) {
+    let isButton;
+    if (!this._toggleButton) {
+      this._elementToggle = SelectorEngine.find(SELECTOR_TOGGLE);
+    }
+    if (this._elementToggle) {
+      this._elementToggle.forEach((button) => {
+        const attributes = Manipulator.getDataAttribute(button, 'toggle');
+        if (attributes === this._element.id || this._element.classList.contains(attributes)) {
+          this._toggleButton = button;
+          isButton = this._toggleButton.contains(event.target);
+        }
+      });
+    }
+
+    if (!isSelectContent && !isDropdown && !isDropdownContent && !isButton) {
       this.close();
     }
   }

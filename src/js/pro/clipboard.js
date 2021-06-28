@@ -116,6 +116,7 @@ class Clipboard {
 
   _selectInput(input) {
     input.select();
+    input.focus();
     input.setSelectionRange(0, 99999);
 
     document.execCommand('copy');
