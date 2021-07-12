@@ -775,7 +775,7 @@ class Select {
     } else {
       // prettier-ignore
       // eslint-disable-next-line
-      this.multiple ? (this._input.value = '') : (this._input.value = this._optionsToRender[0].label);
+      this.multiple || !this._optionsToRender[0] ? (this._input.value = '') : (this._input.value = this._optionsToRender[0].label);
     }
   }
 

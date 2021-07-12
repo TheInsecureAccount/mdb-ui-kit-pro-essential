@@ -399,6 +399,7 @@ class Datepicker {
 
     this._listenToDateSelection();
     this._addControlsListeners();
+    this._updateControlsDisabledState();
     this._listenToEscapeClick();
     this._listenToKeyboardNavigation();
     this._listenToDatesContainerFocus();
