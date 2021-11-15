@@ -79,6 +79,8 @@ const BACKDROP_CLOSE_ANIMATION_CLASS = 'fade-out';
 const CONTAINER_OPEN_ANIMATION_CLASS = 'fade-in';
 const CONTAINER_CLOSE_ANIMATION_CLASS = 'fade-out';
 
+const CLASS_FORM_ICON_TRAILING = 'form-icon-trailing';
+
 const SELECTOR_DATEPICKER = '.datepicker';
 const SELECTOR_DATA_TOGGLE = '[data-mdb-toggle="datepicker"]';
 const SELECTOR_MODAL_CONTAINER = '.datepicker-modal-container';
@@ -357,6 +359,7 @@ class Datepicker {
   _appendToggleButton() {
     const toggleButton = getToggleButtonTemplate(this._toggleButtonId);
     this._element.insertAdjacentHTML('beforeend', toggleButton);
+    Manipulator.addClass(this._input, CLASS_FORM_ICON_TRAILING);
   }
 
   open() {
@@ -1297,7 +1300,9 @@ class Datepicker {
         this._view,
         YEARS_IN_VIEW,
         this._options.min,
-        this._options.max
+        this._options.max,
+        this.lastYearInView,
+        this.firstYearInView
       )
     ) {
       this.nextButton.disabled = true;
@@ -1312,7 +1317,8 @@ class Datepicker {
         YEARS_IN_VIEW,
         this._options.min,
         this._options.max,
-        this.lastYearInView
+        this.lastYearInView,
+        this.firstYearInView
       )
     ) {
       this.previousButton.disabled = true;
@@ -1415,6 +1421,12 @@ class Datepicker {
 
   static getInstance(element) {
     return Data.getData(element, DATA_KEY);
+  }
+
+  static getOrCreateInstance(element, config = {}) {
+    return (
+      this.getInstance(element) || new this(element, typeof config === 'object' ? config : null)
+    );
   }
 }
 
