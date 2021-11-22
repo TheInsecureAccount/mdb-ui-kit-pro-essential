@@ -1774,9 +1774,11 @@ class Timepicker {
     if (isToRemove) {
       Manipulator.addClass(this._wrapper, 'animation');
       Manipulator.addClass(this._wrapper, WRAPPER_CLOSE_ANIMATION_CLASS);
+      this._wrapper.style.animationDuration = '300ms';
     } else {
       Manipulator.addClass(this._wrapper, 'animation');
       Manipulator.addClass(this._wrapper, WRAPPER_OPEN_ANIMATION_CLASS);
+      this._wrapper.style.animationDuration = '300ms';
 
       if (!this._options.inline) Manipulator.addClass(this._clock, CLOCK_ANIMATION_CLASS);
     }
