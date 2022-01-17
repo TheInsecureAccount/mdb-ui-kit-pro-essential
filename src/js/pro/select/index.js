@@ -1006,7 +1006,8 @@ class Select {
   }
 
   _listenToOutsideClick() {
-    EventHandler.on(document, 'click', this._handleOutSideClick.bind(this));
+    this._outsideClick = this._handleOutSideClick.bind(this);
+    EventHandler.on(document, 'click', this._outsideClick);
   }
 
   _handleOutSideClick(event) {
@@ -1074,7 +1075,7 @@ class Select {
   }
 
   _removeDropdownEvents() {
-    EventHandler.off(document, 'click', this._handleOutSideClick.bind(this));
+    EventHandler.off(document, 'click', this._outsideClick);
 
     if (this._config.filter) {
       EventHandler.off(this.dropdown, 'keydown');
