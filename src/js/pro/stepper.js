@@ -41,6 +41,7 @@ const DefaultType = {
   stepperVerticalBreakpoint: 'number',
   stepperMobileBreakpoint: 'number',
   stepperMobileBarBreakpoint: 'number',
+  animations: 'boolean',
 };
 
 const Default = {
@@ -54,6 +55,7 @@ const Default = {
   stepperVerticalBreakpoint: 0,
   stepperMobileBreakpoint: 0,
   stepperMobileBarBreakpoint: 4,
+  animations: true,
 };
 
 const EVENT_MOUSEDOWN = `mousedown${EVENT_KEY}`;
@@ -128,6 +130,8 @@ class Stepper {
     this._currentView = '';
     this._activeStepIndex = 0;
     this._verticalStepperStyles = [];
+    this._animations =
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches && this._options.animations;
 
     if (this._element) {
       Data.setData(element, DATA_KEY, this);
@@ -813,6 +817,20 @@ class Stepper {
   }
 
   _animateHorizontalStep(index) {
+    if (!this._animations) {
+      this._steps.forEach((el, i) => {
+        const stepContent = SelectorEngine.findOne(`.${CONTENT_CLASS}`, el);
+
+        if (i !== index) {
+          this._hideElement(stepContent);
+        }
+      });
+
+      this._setHeight(this._steps[index]);
+
+      return;
+    }
+
     const isForward = index > this._activeStepIndex;
     const nextStepContent = SelectorEngine.findOne(`.${CONTENT_CLASS}`, this._steps[index]);
     const activeStepContent = SelectorEngine.findOne(`.${CONTENT_CLASS}`, this.activeStep);
@@ -838,8 +856,10 @@ class Stepper {
       nextStepAnimation = 'slide-in-left';
     }
 
-    activeStepContent.classList.add(activeStepAnimation, 'animation', 'fast');
-    nextStepContent.classList.add(nextStepAnimation, 'animation', 'fast');
+    if (this._animations) {
+      activeStepContent.classList.add(activeStepAnimation, 'animation', 'fast');
+      nextStepContent.classList.add(nextStepAnimation, 'animation', 'fast');
+    }
 
     this._setHeight(this._steps[index]);
 

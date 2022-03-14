@@ -2,6 +2,14 @@ import { element } from '../../mdb/util/index';
 import Manipulator from '../../mdb/dom/manipulator';
 import allOptionsSelected from './util';
 
+const preventKeydown = (event) => {
+  if (event.code === 'Tab' || event.code === 'Esc') {
+    return;
+  }
+
+  event.preventDefault();
+};
+
 export function getWrapperTemplate(id, config, label) {
   const wrapper = document.createElement('div');
   wrapper.setAttribute('id', id);
@@ -44,14 +52,17 @@ export function getWrapperTemplate(id, config, label) {
     input.setAttribute('placeholder', config.placeholder);
   }
 
-  if (!config.validation) {
-    input.setAttribute('readonly', '');
+  if (config.validation) {
+    Manipulator.addStyle(input, { 'pointer-events': 'none' });
+    Manipulator.addStyle(formOutline, { cursor: 'pointer' });
+  } else {
+    input.setAttribute('readonly', 'true');
   }
 
   if (config.validation) {
     input.setAttribute('required', 'true');
     input.setAttribute('aria-required', 'true');
-    input.addEventListener('keypress', (event) => event.preventDefault());
+    input.addEventListener('keydown', preventKeydown);
   }
 
   const validFeedback = element('div');
@@ -338,4 +349,13 @@ function createOptionGroupTemplate(optionGroup, config) {
   });
 
   return group;
+}
+
+export function getFakeValueTemplate(value) {
+  const fakeValue = element('div');
+  fakeValue.innerHTML = value;
+  Manipulator.addClass(fakeValue, 'form-label');
+  Manipulator.addClass(fakeValue, 'select-fake-value');
+
+  return fakeValue;
 }

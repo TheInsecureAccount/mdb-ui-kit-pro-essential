@@ -42,11 +42,11 @@
         color: $lightbox-gallery-toolbar-button-hover-color;
       }
       &:before {
-        font-family: 'Font Awesome 5 Free';
+        font-family: 'Font Awesome 6 Free';
         font-weight: $lightbox-gallery-toolbar-button-before-font-weight;
       }
       &.fontawesome-pro:before {
-        font-family: 'Font Awesome 5 Pro';
+        font-family: 'Font Awesome 6 Pro';
       }
       &.lightbox-gallery-fullscreen-btn:before {
         content: '\f065';
@@ -132,12 +132,12 @@
         color: $lightbox-gallery-arrow-right-button-hover-color;
       }
       &:before {
-        font-family: 'Font Awesome 5 Free';
+        font-family: 'Font Awesome 6 Free';
         font-weight: $lightbox-gallery-arrow-right-button-before-font-weight;
         content: '\f061';
       }
       &.fontawesome-pro:before {
-        font-family: 'Font Awesome 5 Pro';
+        font-family: 'Font Awesome 6 Pro';
       }
     }
   }
@@ -162,12 +162,12 @@
         color: $lightbox-gallery-arrow-left-button-hover-color;
       }
       &:before {
-        font-family: 'Font Awesome 5 Free';
+        font-family: 'Font Awesome 6 Free';
         font-weight: $lightbox-gallery-arrow-left-button-before-font-weight;
         content: '\f060';
       }
       &.fontawesome-pro:before {
-        font-family: 'Font Awesome 5 Pro';
+        font-family: 'Font Awesome 6 Pro';
       }
     }
   }

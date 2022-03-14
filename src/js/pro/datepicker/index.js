@@ -143,6 +143,7 @@ const Default = {
   toggleButton: true,
   disableToggleButton: false,
   disableInput: false,
+  animations: true,
 };
 
 const DefaultType = {
@@ -182,6 +183,7 @@ const DefaultType = {
   toggleButton: 'boolean',
   disableToggleButton: 'boolean',
   disableInput: 'boolean',
+  animations: 'boolean',
 };
 
 /**
@@ -199,11 +201,16 @@ class Datepicker {
     this._selectedDate = null;
     this._selectedYear = null;
     this._selectedMonth = null;
+    this._headerDate = null;
+    this._headerYear = null;
+    this._headerMonth = null;
     this._view = this._options.view;
     this._popper = null;
     this._focusTrap = null;
     this._isOpen = false;
     this._toggleButtonId = getUID('datepicker-toggle-');
+    this._animations =
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches && this._options.animations;
 
     if (this._element) {
       Data.setData(element, DATA_KEY, this);
@@ -393,13 +400,15 @@ class Datepicker {
       this._openModal(backdrop, template);
     }
 
-    Manipulator.addClass(this.container, 'animation');
-    Manipulator.addClass(this.container, CONTAINER_OPEN_ANIMATION_CLASS);
-    this.container.style.animationDuration = '300ms';
+    if (this._animations) {
+      Manipulator.addClass(this.container, 'animation');
+      Manipulator.addClass(this.container, CONTAINER_OPEN_ANIMATION_CLASS);
+      this.container.style.animationDuration = '300ms';
 
-    Manipulator.addClass(backdrop, 'animation');
-    Manipulator.addClass(backdrop, BACKDROP_OPEN_ANIMATION_CLASS);
-    backdrop.style.animationDuration = '150ms';
+      Manipulator.addClass(backdrop, 'animation');
+      Manipulator.addClass(backdrop, BACKDROP_OPEN_ANIMATION_CLASS);
+      backdrop.style.animationDuration = '150ms';
+    }
 
     this._setFocusTrap(this.container);
 
@@ -639,10 +648,8 @@ class Datepicker {
         break;
       case ENTER:
       case SPACE:
-        if (!this._options.filter || this._options.filter(this._activeDate)) {
-          this._selectDate(this._activeDate);
-          event.preventDefault();
-        }
+        this._selectDate(this._activeDate);
+        event.preventDefault();
         return;
       default:
         return;
@@ -855,8 +862,10 @@ class Datepicker {
 
     this._removeDatepickerListeners();
 
-    Manipulator.addClass(this.container, 'animation');
-    Manipulator.addClass(this.container, CONTAINER_CLOSE_ANIMATION_CLASS);
+    if (this._animations) {
+      Manipulator.addClass(this.container, 'animation');
+      Manipulator.addClass(this.container, CONTAINER_CLOSE_ANIMATION_CLASS);
+    }
 
     if (this._options.inline) {
       this._closeDropdown();
@@ -876,7 +885,18 @@ class Datepicker {
 
   _closeDropdown() {
     const datepicker = SelectorEngine.findOne('.datepicker-dropdown-container');
-    datepicker.addEventListener('animationend', () => {
+
+    if (this._animations) {
+      datepicker.addEventListener('animationend', () => {
+        if (datepicker) {
+          document.body.removeChild(datepicker);
+        }
+
+        if (this._popper) {
+          this._popper.destroy();
+        }
+      });
+    } else {
       if (datepicker) {
         document.body.removeChild(datepicker);
       }
@@ -884,7 +904,7 @@ class Datepicker {
       if (this._popper) {
         this._popper.destroy();
       }
-    });
+    }
     this._removeFocusTrap();
   }
 
@@ -892,17 +912,29 @@ class Datepicker {
     const backdrop = SelectorEngine.findOne('.datepicker-backdrop');
     const datepicker = SelectorEngine.findOne('.datepicker-modal-container');
 
-    Manipulator.addClass(backdrop, 'animation');
-    Manipulator.addClass(backdrop, BACKDROP_CLOSE_ANIMATION_CLASS);
-
-    if (datepicker && backdrop) {
-      backdrop.addEventListener('animationend', () => {
-        document.body.removeChild(backdrop);
-        document.body.removeChild(datepicker);
-        document.body.style.overflow = '';
-        document.body.style.paddingRight = '';
-      });
+    if (!datepicker || !backdrop) {
+      return;
     }
+
+    if (this._animations) {
+      Manipulator.addClass(backdrop, 'animation');
+      Manipulator.addClass(backdrop, BACKDROP_CLOSE_ANIMATION_CLASS);
+    }
+
+    if (this._animations) {
+      backdrop.addEventListener('animationend', () => {
+        this._removePicker(backdrop, datepicker);
+      });
+    } else {
+      this._removePicker(backdrop, datepicker);
+    }
+  }
+
+  _removePicker(backdrop, datepicker) {
+    document.body.removeChild(backdrop);
+    document.body.removeChild(datepicker);
+    document.body.style.overflow = '';
+    document.body.style.paddingRight = '';
   }
 
   _removeFocusTrap() {
@@ -950,6 +982,9 @@ class Datepicker {
     this._selectedDate = null;
     this._selectedYear = null;
     this._selectedMonth = null;
+    this._headerDate = null;
+    this._headerYear = null;
+    this._headerMonth = null;
     this._view = null;
     this._popper = null;
     this._focusTrap = null;
@@ -962,15 +997,24 @@ class Datepicker {
   }
 
   handleOk() {
-    this._confirmSelection(this._selectedDate);
+    this._confirmSelection(this._headerDate);
     this.close();
   }
 
   _selectDate(date, cell = this.activeCell) {
+    const { min, max, filter } = this._options;
+
+    if (isDateDisabled(date, min, max, filter)) {
+      return;
+    }
+
     this._removeCurrentSelectionStyles();
     this._removeCurrentFocusStyles();
     this._addSelectedStyles(cell);
     this._selectedDate = date;
+    this._selectedYear = getYear(date);
+    this._selectedMonth = getMonth(date);
+    this._headerDate = date;
 
     if (this._options.inline) {
       this._confirmSelection(date);
@@ -982,7 +1026,7 @@ class Datepicker {
     this._removeCurrentSelectionStyles();
     this._removeCurrentFocusStyles();
     this._addSelectedStyles(cell);
-    this._selectedYear = year;
+    this._headerYear = year;
 
     this._asyncChangeView('months');
   }
@@ -991,7 +1035,7 @@ class Datepicker {
     this._removeCurrentSelectionStyles();
     this._removeCurrentFocusStyles();
     this._addSelectedStyles(cell);
-    this._selectedMonth = month;
+    this._headerMonth = month;
 
     this._asyncChangeView('days');
   }
@@ -1028,6 +1072,9 @@ class Datepicker {
     this._selectedDate = null;
     this._selectedMonth = null;
     this._selectedYear = null;
+    this._headerDate = null;
+    this._headerMonth = null;
+    this._headerYear = null;
     this._removeCurrentSelectionStyles();
     this._input.value = '';
     this._input.classList.remove('active');
@@ -1151,7 +1198,7 @@ class Datepicker {
 
   nextMonth() {
     const nextMonth = addMonths(this._activeDate, 1);
-    const template = createDayViewTemplate(nextMonth, this._selectedDate, this._options);
+    const template = createDayViewTemplate(nextMonth, this._headerDate, this._options);
     this._activeDate = nextMonth;
     this.viewChangeButton.textContent = `${this._options.monthsFull[this.activeMonth]} ${
       this.activeYear
@@ -1162,7 +1209,7 @@ class Datepicker {
   previousMonth() {
     const previousMonth = addMonths(this._activeDate, -1);
     this._activeDate = previousMonth;
-    const template = createDayViewTemplate(previousMonth, this._selectedDate, this._options);
+    const template = createDayViewTemplate(previousMonth, this._headerDate, this._options);
     this.viewChangeButton.textContent = `${this._options.monthsFull[this.activeMonth]} ${
       this.activeYear
     }`;
@@ -1241,7 +1288,7 @@ class Datepicker {
     if (view === 'days') {
       this.datesContainer.innerHTML = createDayViewTemplate(
         this._activeDate,
-        this._selectedDate,
+        this._headerDate,
         this._options
       );
     }
@@ -1337,11 +1384,17 @@ class Datepicker {
     if (isValidDate(date)) {
       this._activeDate = date;
       this._selectedDate = date;
+      this._selectedYear = getYear(date);
+      this._selectedMonth = getMonth(date);
+      this._headerDate = date;
     } else {
       this._activeDate = new Date();
       this._selectedDate = null;
       this._selectedMonth = null;
       this._selectedYear = null;
+      this._headerDate = null;
+      this._headerMonth = null;
+      this._headerYear = null;
     }
   }
 

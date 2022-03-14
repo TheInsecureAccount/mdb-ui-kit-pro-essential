@@ -111,6 +111,7 @@ const Default = {
   withIcon: true,
   pmLabel: 'PM',
   amLabel: 'AM',
+  animations: true,
 };
 
 const DefaultType = {
@@ -143,6 +144,7 @@ const DefaultType = {
   withIcon: 'boolean',
   pmLabel: 'string',
   amLabel: 'string',
+  animations: 'boolean',
 };
 
 /**
@@ -217,6 +219,9 @@ class Timepicker {
       this._options.format24 = true;
       this._currentTime = formatNormalHours(this._inputValue);
     }
+
+    this._animations =
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches && this._options.animations;
 
     this.init();
 
@@ -739,7 +744,11 @@ class Timepicker {
           }
 
           this._getDomElements();
-          this._toggleBackdropAnimation();
+          if (this._animations) {
+            this._toggleBackdropAnimation();
+          } else {
+            Manipulator.addClass(this._wrapper, 'opacity-100');
+          }
           this._setActiveClassToTipsOnOpen(hour, minute, format);
           this._appendTimes();
           this._setActiveClassToTipsOnOpen(hour, minute, format);
@@ -940,7 +949,11 @@ class Timepicker {
           Manipulator.addStyle(this.elementToggle, {
             pointerEvents: 'auto',
           });
-          this._toggleBackdropAnimation(true);
+
+          if (this._animations) {
+            this._toggleBackdropAnimation(true);
+          }
+
           this._removeModal();
           this._focusTrap.disable();
           this._focusTrap = null;
@@ -1138,7 +1151,10 @@ class Timepicker {
         this.input.value = `${currentValue} ${hourModeActive.textContent}`;
       }
 
-      this._toggleBackdropAnimation(true);
+      if (this._animations) {
+        this._toggleBackdropAnimation(true);
+      }
+
       this._removeModal();
 
       EventHandler.trigger(this.input, 'input.mdb.timepicker');
@@ -1752,22 +1768,30 @@ class Timepicker {
   }
 
   _removeModal() {
-    setTimeout(() => {
-      this._modal.remove();
-      Manipulator.addStyle(this._document.body, {
-        overflow: '',
-      });
-      if (!checkBrowser()) {
-        Manipulator.addStyle(this._document.body, {
-          paddingRight: '',
-        });
-      }
-    }, 300);
+    if (this._animations) {
+      setTimeout(() => {
+        this._removeModalElements();
+      }, 300);
+    } else {
+      this._removeModalElements();
+    }
 
     EventHandlerMulti.off(
       this._document,
       'click keydown mousedown mouseup mousemove mouseleave mouseover touchmove touchend'
     );
+  }
+
+  _removeModalElements() {
+    this._modal.remove();
+    Manipulator.addStyle(this._document.body, {
+      overflow: '',
+    });
+    if (!checkBrowser()) {
+      Manipulator.addStyle(this._document.body, {
+        paddingRight: '',
+      });
+    }
   }
 
   _toggleBackdropAnimation(isToRemove = false) {

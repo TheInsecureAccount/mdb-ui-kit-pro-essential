@@ -211,8 +211,8 @@ function createFooter(options) {
       `;
 }
 
-export function createDayViewTemplate(date, selectedDate, options) {
-  const dates = getDatesArray(date, selectedDate, options);
+export function createDayViewTemplate(date, headerDate, options) {
+  const dates = getDatesArray(date, headerDate, options);
   const dayNames = options.weekdaysNarrow;
 
   const tableHeadContent = `
@@ -265,7 +265,7 @@ export function createDayViewTemplate(date, selectedDate, options) {
     `;
 }
 
-function getDatesArray(activeDate, selectedDate, options) {
+function getDatesArray(activeDate, headerDate, options) {
   const dates = [];
 
   const month = getMonth(activeDate);
@@ -292,7 +292,7 @@ function getDatesArray(activeDate, selectedDate, options) {
         week.push({
           date,
           currentMonth: isCurrentMonth,
-          isSelected: selectedDate && isSameDate(date, selectedDate),
+          isSelected: headerDate && isSameDate(date, headerDate),
           isToday: isSameDate(date, getToday()),
           dayNumber: getDate(date),
           disabled: isDateDisabled(date, options.min, options.max, options.filter),
@@ -308,7 +308,7 @@ function getDatesArray(activeDate, selectedDate, options) {
         week.push({
           date,
           currentMonth: isCurrentMonth,
-          isSelected: selectedDate && isSameDate(date, selectedDate),
+          isSelected: headerDate && isSameDate(date, headerDate),
           isToday: isSameDate(date, getToday()),
           dayNumber: getDate(date),
           disabled: isDateDisabled(date, options.min, options.max, options.filter),
@@ -328,7 +328,7 @@ function getDatesArray(activeDate, selectedDate, options) {
         week.push({
           date,
           currentMonth: isCurrentMonth,
-          isSelected: selectedDate && isSameDate(date, selectedDate),
+          isSelected: headerDate && isSameDate(date, headerDate),
           isToday: isSameDate(date, getToday()),
           dayNumber: getDate(date),
           disabled: isDateDisabled(date, options.min, options.max, options.filter),
@@ -345,6 +345,7 @@ function getDatesArray(activeDate, selectedDate, options) {
 export function createMonthViewTemplate(year, selectedYear, selectedMonth, options, monthsInRow) {
   const months = getMonthsArray(options, monthsInRow);
   const currentMonth = getMonth(getToday());
+  const currentYear = getYear(getToday());
 
   const tableBodyContent = `
       ${months
@@ -358,7 +359,7 @@ export function createMonthViewTemplate(year, selectedYear, selectedMonth, optio
                 <td class="datepicker-cell datepicker-large-cell datepicker-month-cell ${
                   isMonthDisabled(monthIndex, year, options.min, options.max) ? 'disabled' : ''
                 } ${monthIndex === selectedMonth && year === selectedYear ? 'selected' : ''} ${
-                  monthIndex === currentMonth ? 'current' : ''
+                  monthIndex === currentMonth && year === currentYear ? 'current' : ''
                 }" data-mdb-month="${monthIndex}" data-mdb-year="${year}" aria-label="${month}, ${year}">
                   <div class="datepicker-cell-content datepicker-large-cell-content">${month}</div>
                 </td>

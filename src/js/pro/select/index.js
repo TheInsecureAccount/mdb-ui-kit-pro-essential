@@ -9,7 +9,12 @@ import SelectOption from './select-option';
 import SelectionModel from './selection-model';
 import { ESCAPE, ENTER, DOWN_ARROW, UP_ARROW, HOME, END } from '../../mdb/util/keycodes';
 import allOptionsSelected from './util';
-import { getWrapperTemplate, getDropdownTemplate, getOptionsListTemplate } from './templates';
+import {
+  getWrapperTemplate,
+  getDropdownTemplate,
+  getOptionsListTemplate,
+  getFakeValueTemplate,
+} from './templates';
 
 const Default = {
   container: 'body',
@@ -117,6 +122,8 @@ class Select {
     this._popper = null;
     this._input = null;
     this._label = SelectorEngine.next(this._element, SELECTOR_LABEL)[0];
+    this._fakeValue = null;
+    this._isFakeValueActive = false;
     this._customContent = SelectorEngine.next(element, SELECTOR_CUSTOM_CONTENT)[0];
     this._toggleButton = null;
     this._elementToggle = null;
@@ -306,6 +313,8 @@ class Select {
     this._initOutlineInput();
     this._setDefaultSelections();
     this._updateInputValue();
+    this._appendFakeValue();
+    this._updateFakeLabelPosition();
     this._updateLabelPosition();
     this._updateClearButtonVisibility();
 
@@ -620,6 +629,7 @@ class Select {
       selected.deselect();
     }
     this._updateInputValue();
+    this._updateFakeLabelPosition();
     this._updateLabelPosition();
     this._updateClearButtonVisibility();
 
@@ -667,6 +677,7 @@ class Select {
     }
 
     this._updateInputValue();
+    this._updateFakeLabelPosition();
     this._updateLabelPosition();
     this._updateClearButtonVisibility();
 
@@ -704,6 +715,7 @@ class Select {
     }
 
     this._updateInputValue();
+    this._updateFakeLabelPosition();
     this._updateLabelPosition();
     this._updateClearButtonVisibility();
   }
@@ -770,7 +782,11 @@ class Select {
       value = labels;
     }
 
-    if (value) {
+    if (!this.multiple && !this._isSelectionValid(this._selectionModel.selection)) {
+      this._input.value = '';
+    } else if (this._isLabelEmpty(this._selectionModel.selection)) {
+      this._input.value = ' ';
+    } else if (value) {
       this._input.value = value;
     } else {
       // prettier-ignore
@@ -779,15 +795,56 @@ class Select {
     }
   }
 
+  _isSelectionValid(selection) {
+    if (selection && (selection.disabled || selection.value === '')) {
+      return false;
+    }
+
+    return true;
+  }
+
+  _isLabelEmpty(selection) {
+    if (selection && selection.label === '') {
+      return true;
+    }
+
+    return false;
+  }
+
+  _appendFakeValue() {
+    if (!this._selectionModel.selection) {
+      return;
+    }
+
+    const value = this._selectionModel.selection.label;
+    this._fakeValue = getFakeValueTemplate(value);
+    const inputWrapper = SelectorEngine.findOne(SELECTOR_FORM_OUTLINE, this._wrapper);
+    inputWrapper.appendChild(this._fakeValue);
+  }
+
   _updateLabelPosition() {
     if (!this._label) {
       return;
     }
 
-    if (this._input.value !== '' || this._isOpen) {
+    if (this._input.value !== '' || this._isOpen || this._isFakeValueActive) {
       Manipulator.addClass(this._label, CLASS_NAME_ACTIVE);
     } else {
       Manipulator.removeClass(this._label, CLASS_NAME_ACTIVE);
+    }
+  }
+
+  _updateFakeLabelPosition() {
+    if (!this._fakeValue) {
+      return;
+    }
+
+    if (this._input.value === '') {
+      this._isFakeValueActive = true;
+      Manipulator.addClass(this._fakeValue, CLASS_NAME_ACTIVE);
+    } else {
+      this._isFakeValueActive = false;
+      Manipulator.removeClass(this._fakeValue, CLASS_NAME_ACTIVE);
     }
   }
 
@@ -1101,6 +1158,7 @@ class Select {
     this._selectionModel.clear();
     this._setDefaultSelections();
     this._updateInputValue();
+    this._updateFakeLabelPosition();
     this._updateLabelPosition();
     this._updateClearButtonVisibility();
 

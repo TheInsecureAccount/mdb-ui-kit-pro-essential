@@ -307,3 +307,14 @@ select.select-initialized {
 .form-white .select-input.focused ~ .select-arrow {
   color: $form-outline-select-white-arrow;
 }
+
+// Fake label
+.form-outline .form-control ~ .form-label.select-fake-value,
+.form-outline .form-control:focus ~ .form-label.select-fake-value,
+.form-outline .form-control.active ~ .form-label.select-fake-value {
+  transform: none;
+  display: none;
+  &.active {
+    display: block;
+  }
+}

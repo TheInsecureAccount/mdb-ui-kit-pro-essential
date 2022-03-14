@@ -95,6 +95,7 @@ class Modal extends BSModal {
 
     if (this._isNonInvasive) {
       this._config.backdrop = false;
+      this._config.focus = false;
       this._isBodyOverflowing = true;
       this._onModalShow();
       this._onModalShown();
