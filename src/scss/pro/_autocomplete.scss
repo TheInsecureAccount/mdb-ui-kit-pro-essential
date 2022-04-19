@@ -36,24 +36,23 @@
   }
 
   & ~ .form-notch .form-notch-leading {
-    border-top: 2px solid #1266f1;
-    border-bottom: 2px solid #1266f1;
-    border-left: 2px solid #1266f1;
-    transition: all 0.2s linear;
+    border-color: $form-outline-select-notch-border-color;
+    box-shadow: -1px 0 0 0 $form-outline-select-notch-border-color,
+      0 1px 0 0 $form-outline-select-notch-border-color,
+      0 -1px 0 0 $form-outline-select-notch-border-color;
   }
 
   & ~ .form-notch .form-notch-middle {
-    border-bottom: 2px solid;
-    border-color: #1266f1;
-    transition: all 0.2s linear;
+    border-color: $form-outline-select-notch-border-color;
+    box-shadow: 0 1px 0 0 $form-outline-select-notch-border-color;
+    border-top: 1px solid transparent;
   }
 
   & ~ .form-notch .form-notch-trailing {
-    border-top: 2px solid;
-    border-bottom: 2px solid;
-    border-right: 2px solid;
-    border-color: #1266f1;
-    transition: all 0.2s linear;
+    border-color: $form-outline-select-notch-border-color;
+    box-shadow: 1px 0 0 0 $form-outline-select-notch-border-color,
+      0 -1px 0 0 $form-outline-select-notch-border-color,
+      0 1px 0 0 $form-outline-select-notch-border-color;
   }
 }
 
@@ -150,4 +149,8 @@
   width: 1.4rem;
   height: 1.4rem;
   border-width: 0.15em;
+}
+
+.form-outline .autocomplete-input.form-control.focusing ~ .form-notch .form-notch-middle {
+  transition: none;
 }

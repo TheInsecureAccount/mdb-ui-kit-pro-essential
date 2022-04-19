@@ -1,11 +1,62 @@
-import { Chart as Chartjs } from 'chart.js';
+import {
+  Chart as Chartjs,
+  ArcElement,
+  LineElement,
+  BarElement,
+  PointElement,
+  BarController,
+  BubbleController,
+  DoughnutController,
+  LineController,
+  PieController,
+  PolarAreaController,
+  RadarController,
+  ScatterController,
+  CategoryScale,
+  LinearScale,
+  LogarithmicScale,
+  RadialLinearScale,
+  TimeScale,
+  TimeSeriesScale,
+  Decimation,
+  Filler,
+  Legend,
+  Title,
+  Tooltip,
+  SubTitle,
+} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { element, getjQuery, onDOMContentLoaded } from '../mdb/util/index';
 import Data from '../mdb/dom/data';
 import Manipulator from '../mdb/dom/manipulator';
 import SelectorEngine from '../mdb/dom/selector-engine';
 
-Chartjs.plugins.unregister(ChartDataLabels);
+Chartjs.register(
+  ArcElement,
+  LineElement,
+  BarElement,
+  PointElement,
+  BarController,
+  BubbleController,
+  DoughnutController,
+  LineController,
+  PieController,
+  PolarAreaController,
+  RadarController,
+  ScatterController,
+  CategoryScale,
+  LinearScale,
+  LogarithmicScale,
+  RadialLinearScale,
+  TimeScale,
+  TimeSeriesScale,
+  Decimation,
+  Filler,
+  Legend,
+  Title,
+  Tooltip,
+  SubTitle
+);
 
 /**
  * ------------------------------------------------------------------------
@@ -47,47 +98,35 @@ const DEFAULT_OPTIONS = {
         borderColor: 'red',
       },
       scales: {
-        xAxes: [
-          {
-            stacked: true,
-            gridLines: {
-              display: false,
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+        x: {
+          stacked: true,
+          grid: {
+            display: false,
           },
-        ],
-        yAxes: [
-          {
-            stacked: false,
-            gridLines: {
-              borderDash: [2],
-              drawBorder: false,
-              zeroLineColor: 'rgba(0,0,0,0)',
-              zeroLineBorderDash: [2],
-              zeroLineBorderDashOffset: [2],
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
           },
-        ],
+        },
+        y: {
+          stacked: false,
+          grid: {
+            borderDash: [2],
+            drawBorder: false,
+            zeroLineColor: 'rgba(0,0,0,0)',
+            zeroLineBorderDash: [2],
+            zeroLineBorderDashOffset: [2],
+          },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
+          },
+        },
       },
     },
   },
   bar: {
     options: {
-      elements: {
-        line: {
-          backgroundColor: 'rgb(66, 133, 244)',
-          borderWidth: 0,
-        },
-        rectangle: {
-          backgroundColor: 'rgb(66, 133, 244)',
-          borderWidth: 0,
-        },
-      },
+      backgroundColor: 'rgb(66, 133, 244)',
+      borderWidth: 0,
       responsive: true,
       legend: {
         display: true,
@@ -97,79 +136,28 @@ const DEFAULT_OPTIONS = {
         mode: 'index',
       },
       scales: {
-        xAxes: [
-          {
-            stacked: true,
-            gridLines: {
-              display: false,
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+        x: {
+          stacked: true,
+          grid: {
+            display: false,
           },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            gridLines: {
-              borderDash: [2],
-              drawBorder: false,
-              zeroLineColor: 'rgba(0,0,0,0)',
-              zeroLineBorderDash: [2],
-              zeroLineBorderDashOffset: [2],
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
           },
-        ],
-      },
-    },
-  },
-  horizontalBar: {
-    options: {
-      elements: {
-        rectangle: {
-          backgroundColor: 'rgb(66, 133, 244)',
-          borderWidth: 0,
         },
-      },
-      responsive: true,
-      legend: {
-        display: true,
-      },
-      tooltips: {
-        intersect: false,
-        mode: 'index',
-      },
-      scales: {
-        xAxes: [
-          {
-            stacked: true,
-            gridLines: {
-              display: true,
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+        y: {
+          stacked: true,
+          grid: {
+            borderDash: [2],
+            drawBorder: false,
+            zeroLineColor: 'rgba(0,0,0,0)',
+            zeroLineBorderDash: [2],
+            zeroLineBorderDashOffset: [2],
           },
-        ],
-        yAxes: [
-          {
-            stacked: true,
-            gridLines: {
-              display: false,
-              borderDash: [2],
-              drawBorder: false,
-              zeroLineColor: 'rgba(0,0,0,0)',
-              zeroLineBorderDash: [2],
-              zeroLineBorderDashOffset: [2],
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
           },
-        ],
+        },
       },
     },
   },
@@ -251,32 +239,28 @@ const DEFAULT_OPTIONS = {
         borderColor: 'red',
       },
       scales: {
-        xAxes: [
-          {
-            stacked: true,
-            gridLines: {
-              display: false,
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+        x: {
+          stacked: true,
+          grid: {
+            display: false,
           },
-        ],
-        yAxes: [
-          {
-            stacked: false,
-            gridLines: {
-              borderDash: [2],
-              drawBorder: false,
-              zeroLineColor: 'rgba(0,0,0,0)',
-              zeroLineBorderDash: [2],
-              zeroLineBorderDashOffset: [2],
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
           },
-        ],
+        },
+        y: {
+          stacked: false,
+          grid: {
+            borderDash: [2],
+            drawBorder: false,
+            zeroLineColor: 'rgba(0,0,0,0)',
+            zeroLineBorderDash: [2],
+            zeroLineBorderDashOffset: [2],
+          },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
+          },
+        },
       },
     },
   },
@@ -293,30 +277,26 @@ const DEFAULT_OPTIONS = {
         display: true,
       },
       scales: {
-        xAxes: [
-          {
-            gridLines: {
-              display: false,
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+        x: {
+          grid: {
+            display: false,
           },
-        ],
-        yAxes: [
-          {
-            gridLines: {
-              borderDash: [2],
-              drawBorder: false,
-              zeroLineColor: 'rgba(0,0,0,0)',
-              zeroLineBorderDash: [2],
-              zeroLineBorderDashOffset: [2],
-            },
-            ticks: {
-              fontColor: 'rgba(0,0,0, 0.5)',
-            },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
           },
-        ],
+        },
+        y: {
+          grid: {
+            borderDash: [2],
+            drawBorder: false,
+            zeroLineColor: 'rgba(0,0,0,0)',
+            zeroLineBorderDash: [2],
+            zeroLineBorderDashOffset: [2],
+          },
+          ticks: {
+            fontColor: 'rgba(0,0,0, 0.5)',
+          },
+        },
       },
     },
   },
@@ -387,13 +367,16 @@ class Chart {
       this._createCanvas();
 
       const options = GENERATE_DATA(this._options, this._type, DEFAULT_OPTIONS);
+      const plugins = [];
+
       if (options.dataLabelsPlugin) {
-        options.plugins = ChartDataLabels;
+        plugins.push(ChartDataLabels);
       }
 
       this._chart = new Chartjs(this._canvas, {
         ...this._data,
         ...options,
+        plugins,
       });
     }
   }

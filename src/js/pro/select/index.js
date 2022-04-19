@@ -7,7 +7,7 @@ import { typeCheckConfig, getjQuery, getUID, onDOMContentLoaded } from '../../md
 import Input from '../../free/input';
 import SelectOption from './select-option';
 import SelectionModel from './selection-model';
-import { ESCAPE, ENTER, DOWN_ARROW, UP_ARROW, HOME, END } from '../../mdb/util/keycodes';
+import { ESCAPE, ENTER, DOWN_ARROW, UP_ARROW, HOME, END, TAB } from '../../mdb/util/keycodes';
 import allOptionsSelected from './util';
 import {
   getWrapperTemplate,
@@ -17,6 +17,7 @@ import {
 } from './templates';
 
 const Default = {
+  autoSelect: false,
   container: 'body',
   clearButton: false,
   disabled: false,
@@ -40,6 +41,7 @@ const Default = {
 };
 
 const DefaultType = {
+  autoSelect: 'boolean',
   container: 'string',
   clearButton: 'boolean',
   disabled: 'boolean',
@@ -379,7 +381,11 @@ class Select {
 
   _handleOpenKeydown(event) {
     const key = event.keyCode;
-    const isCloseKey = key === ESCAPE || (key === UP_ARROW && event.altKey);
+    const isCloseKey = key === ESCAPE || (key === UP_ARROW && event.altKey) || key === TAB;
+
+    if (key === TAB && this._config.autoSelect && !this.multiple) {
+      this._handleAutoSelection(this._activeOption);
+    }
 
     if (isCloseKey) {
       this.close();
@@ -720,7 +726,21 @@ class Select {
     this._updateClearButtonVisibility();
   }
 
+  _handleAutoSelection(option) {
+    this._singleOptionSelect(option);
+    this._updateInputValue();
+    this._updateFakeLabelPosition();
+    this._updateLabelPosition();
+    this._updateClearButtonVisibility();
+  }
+
   _handleSingleSelection(option) {
+    this._singleOptionSelect(option);
+    this.close();
+    this._input.focus();
+  }
+
+  _singleOptionSelect(option) {
     const currentSelected = this._selectionModel.selections[0];
 
     if (currentSelected && currentSelected !== option) {
@@ -738,9 +758,6 @@ class Select {
       this._emitValueChangeEvent(this.value);
       this._emitNativeChangeEvent();
     }
-
-    this.close();
-    this._input.focus();
   }
 
   _handleMultiSelection(option) {
@@ -834,12 +851,24 @@ class Select {
     }
   }
 
+  _updateLabelPositionWhileClosing() {
+    if (!this._label) {
+      return;
+    }
+
+    if (this._input.value !== '' || this._isFakeValueActive) {
+      Manipulator.addClass(this._label, CLASS_NAME_ACTIVE);
+    } else {
+      Manipulator.removeClass(this._label, CLASS_NAME_ACTIVE);
+    }
+  }
+
   _updateFakeLabelPosition() {
     if (!this._fakeValue) {
       return;
     }
 
-    if (this._input.value === '') {
+    if (this._input.value === '' && this._fakeValue.innerHTML !== '') {
       this._isFakeValueActive = true;
       Manipulator.addClass(this._fakeValue, CLASS_NAME_ACTIVE);
     } else {
@@ -924,6 +953,14 @@ class Select {
   _openDropdown() {
     this._popper = createPopper(this._input, this._dropdownContainer, {
       placement: 'bottom-start',
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 1],
+          },
+        },
+      ],
     });
     this._container.appendChild(this._dropdownContainer);
 
@@ -1114,6 +1151,7 @@ class Select {
         Manipulator.removeClass(this._label, CLASS_NAME_ACTIVE);
         Manipulator.removeClass(this._input, CLASS_NAME_ACTIVE);
       }
+      this._updateLabelPositionWhileClosing();
     }, 0);
 
     setTimeout(() => {

@@ -14,6 +14,7 @@ import { ESCAPE, UP_ARROW, DOWN_ARROW, HOME, END, ENTER, TAB } from '../../mdb/u
 import { sanitizeHtml, DefaultWhitelist } from '../../mdb/util/sanitizer';
 
 const Default = {
+  autoSelect: false,
   customContent: '',
   debounce: 300,
   displayValue: (value) => value,
@@ -25,6 +26,7 @@ const Default = {
 };
 
 const DefaultType = {
+  autoSelect: 'boolean',
   customContent: 'string',
   debounce: 'number',
   displayValue: 'function',
@@ -42,6 +44,7 @@ const CLASS_NAME_CUSTOM_INPUT = 'autocomplete-input';
 const CLASS_NAME_CUSTOM_LABEL = 'autocomplete-label';
 const CLASS_NAME_ACTIVE = 'active';
 const CLASS_NAME_FOCUSED = 'focused';
+const CLASS_NAME_FOCUSING = 'focusing';
 const CLASS_NAME_OPEN = 'open';
 
 const SELECTOR_DROPDOWN = '.autocomplete-dropdown';
@@ -343,6 +346,28 @@ class Autocomplete {
 
   _handleOpenKeydown(event) {
     const key = event.keyCode;
+
+    if (key === TAB && this._options.autoSelect) {
+      this._selectActiveItem();
+    }
+
+    // fix for flashing notch
+    if (key === ESCAPE || (key === UP_ARROW && event.altKey)) {
+      if (!this._input.value) {
+        Manipulator.addClass(this._input, CLASS_NAME_FOCUSING);
+      }
+
+      this.close();
+      this._input.focus();
+
+      if (!this._input.value) {
+        setTimeout(() => {
+          Manipulator.removeClass(this._input, CLASS_NAME_FOCUSING);
+        }, 10);
+      }
+      return;
+    }
+
     const isCloseKey = key === ESCAPE || (key === UP_ARROW && event.altKey) || key === TAB;
 
     if (isCloseKey) {
@@ -447,7 +472,16 @@ class Autocomplete {
     this._updateDropdownWidth();
     this._listenToWindowResize();
 
-    this._popper = createPopper(this._element, this._dropdownContainer);
+    this._popper = createPopper(this._element, this._dropdownContainer, {
+      modifiers: [
+        {
+          name: 'offset',
+          options: {
+            offset: [0, 1],
+          },
+        },
+      ],
+    });
     document.body.appendChild(this._dropdownContainer);
 
     this._listenToOutsideClick();
@@ -489,6 +523,27 @@ class Autocomplete {
     const item = this._filteredResults[targetIndex];
 
     this._handleSelection(item);
+  }
+
+  _selectActiveItem() {
+    const item = this._filteredResults[this._activeItemIndex];
+
+    if (!item) {
+      return;
+    }
+
+    const value = this._options.displayValue(item);
+    const selectEvent = EventHandler.trigger(this._element, EVENT_SELECT, { value: item });
+
+    if (selectEvent.defaultPrevented) {
+      return;
+    }
+
+    setTimeout(() => {
+      this._canOpenOnFocus = false;
+      this._updateInputValue(value);
+      this._updateLabelPosition();
+    }, 0);
   }
 
   _handleSelection(item) {

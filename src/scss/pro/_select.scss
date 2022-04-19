@@ -96,9 +96,9 @@ select.select-initialized {
 }
 
 .form-outline .select-label.active ~ .form-notch .form-notch-middle {
-  border-top: none;
   border-right: none;
   border-left: none;
+  border-top: 1px solid transparent !important;
 }
 
 .select-input {
@@ -122,27 +122,23 @@ select.select-initialized {
   }
 
   & ~ .form-notch .form-notch-leading {
-    border-top: $form-outline-select-notch-border-width solid
-      $form-outline-select-notch-border-color;
-    border-bottom: $form-outline-select-notch-border-width solid
-      $form-outline-select-notch-border-color;
-    border-left: $form-outline-select-notch-border-width solid
-      $form-outline-select-notch-border-color;
-    transition: $form-outline-select-notch-transition;
+    border-color: $form-outline-select-notch-border-color;
+    box-shadow: -1px 0 0 0 $form-outline-select-notch-border-color,
+      0 1px 0 0 $form-outline-select-notch-border-color,
+      0 -1px 0 0 $form-outline-select-notch-border-color;
   }
 
   & ~ .form-notch .form-notch-middle {
-    border-bottom: $form-outline-select-notch-border-width solid;
     border-color: $form-outline-select-notch-border-color;
-    transition: $form-outline-select-notch-transition;
+    box-shadow: 0 1px 0 0 $form-outline-select-notch-border-color;
+    border-top: 1px solid transparent;
   }
 
   & ~ .form-notch .form-notch-trailing {
-    border-top: $form-outline-select-notch-border-width solid;
-    border-bottom: $form-outline-select-notch-border-width solid;
-    border-right: $form-outline-select-notch-border-width solid;
     border-color: $form-outline-select-notch-border-color;
-    transition: $form-outline-select-notch-transition;
+    box-shadow: 1px 0 0 0 $form-outline-select-notch-border-color,
+      0 -1px 0 0 $form-outline-select-notch-border-color,
+      0 1px 0 0 $form-outline-select-notch-border-color;
   }
 }
 

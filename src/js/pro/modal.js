@@ -163,6 +163,16 @@ class Modal extends BSModal {
     });
   }
 
+  _showBackdrop(callback) {
+    if (this._isNonInvasive) {
+      if (typeof callback === 'function') {
+        callback();
+      }
+    } else {
+      super._showBackdrop(callback);
+    }
+  }
+
   _adjustDialog() {
     super._adjustDialog();
     const isNonInvasiveModalOpen = document.body.classList.contains(NON_INVASIVE_CLASS);
@@ -172,7 +182,6 @@ class Modal extends BSModal {
     }
 
     if (this._isNonInvasive) {
-      this._backdrop.hide();
       this._resetAdjustments();
       scrollBarReset();
     }
