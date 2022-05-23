@@ -50,25 +50,25 @@ const Default = {
 class Toast extends BSToast {
   constructor(element, data = {}) {
     super(element, data);
-    this._options = this._getConfig(data);
+    this._config = this._getConfig(data);
     this._setup();
   }
 
   // Getters
 
   get parent() {
-    const [parent] = SelectorEngine.parents(this._element, this._options.container);
+    const [parent] = SelectorEngine.parents(this._element, this._config.container);
     return parent;
   }
 
   get position() {
-    if (!this._options.position) return null;
-    const [y, x] = this._options.position.split('-');
+    if (!this._config.position) return null;
+    const [y, x] = this._config.position.split('-');
     return { y, x };
   }
 
   get verticalOffset() {
-    if (!this._options.stacking || !this.position) return 0;
+    if (!this._config.stacking || !this.position) return 0;
 
     return this.stackUtil.calculateOffset();
   }
@@ -76,13 +76,14 @@ class Toast extends BSToast {
   // Public
 
   update(updatedData = {}) {
-    this._options = this._getConfig(updatedData);
+    this._config = this._getConfig(updatedData);
     this._setupColor();
-    if (!this._options.position) {
+
+    if (!this._config.position) {
       return;
     }
 
-    if (this._options.stacking) {
+    if (this._config.stacking) {
       this._setupStacking();
 
       EventHandler.on(this._element, 'hidden.bs.toast', () => {
@@ -107,14 +108,14 @@ class Toast extends BSToast {
 
   _setup() {
     this._setupColor();
-    if (this._options.width) {
+    if (this._config.width) {
       this._setupWidth();
     }
-    if (!this._options.position) {
+    if (!this._config.position) {
       return;
     }
 
-    if (this._options.stacking) {
+    if (this._config.stacking) {
       this._setupStacking();
 
       EventHandler.on(this._element, 'hidden.bs.toast', () => {
@@ -124,7 +125,7 @@ class Toast extends BSToast {
 
     this._setupPosition();
     this._setupDisplay();
-    if (!this._options.container && this._options.appendToBody) {
+    if (!this._config.container && this._config.appendToBody) {
       this._appendToBody();
     }
 
@@ -135,16 +136,16 @@ class Toast extends BSToast {
   _setupStacking() {
     this.stackUtil = new Stack(this._element, SELECTOR_TOAST, {
       position: this.position.y,
-      offset: this._options.offset,
-      container: this._options.container,
+      offset: this._config.offset,
+      container: this._config.container,
       filter: (el) => {
         const instance = Toast.getInstance(el);
 
         if (!instance) return false;
 
         return (
-          instance._options.container === this._options.container &&
-          instance._options.position === this._options.position
+          instance._config.container === this._config.container &&
+          instance._config.position === this._config.position
         );
       },
     });
@@ -155,7 +156,7 @@ class Toast extends BSToast {
   }
 
   _setupColor() {
-    if (!this._options.color) {
+    if (!this._config.color) {
       return;
     }
 
@@ -172,7 +173,7 @@ class Toast extends BSToast {
       'dark',
     ];
 
-    const color = colors.includes(this._options.color) ? this._options.color : 'primary';
+    const color = colors.includes(this._config.color) ? this._config.color : 'primary';
 
     colors.forEach((color) => {
       this._element.classList.remove(`bg-${color}`);
@@ -185,12 +186,12 @@ class Toast extends BSToast {
 
   _setupWidth() {
     Manipulator.style(this._element, {
-      width: this._options.width,
+      width: this._config.width,
     });
   }
 
   _setupPosition() {
-    if (this._options.container) {
+    if (this._config.container) {
       Manipulator.addClass(this.parent, 'parent-toast-relative');
       Manipulator.addClass(this._element, 'toast-absolute');
     } else {
@@ -203,15 +204,15 @@ class Toast extends BSToast {
     const oppositeX = this.position.x === 'left' ? 'right' : 'left';
     if (this.position.x === 'center') {
       Manipulator.style(this._element, {
-        [this.position.y]: `${this.verticalOffset + this._options.offset}px`,
+        [this.position.y]: `${this.verticalOffset + this._config.offset}px`,
         [oppositeY]: 'unset',
         left: '50%',
         transform: 'translate(-50%)',
       });
     } else {
       Manipulator.style(this._element, {
-        [this.position.y]: `${this.verticalOffset + this._options.offset}px`,
-        [this.position.x]: `${this._options.offset}px`,
+        [this.position.y]: `${this.verticalOffset + this._config.offset}px`,
+        [this.position.x]: `${this._config.offset}px`,
         [oppositeY]: 'unset',
         [oppositeX]: 'unset',
         transform: 'unset',
@@ -272,7 +273,7 @@ class Toast extends BSToast {
 
   _updatePosition() {
     Manipulator.style(this._element, {
-      [this.position.y]: `${this.verticalOffset + this._options.offset}px`,
+      [this.position.y]: `${this.verticalOffset + this._config.offset}px`,
     });
   }
 

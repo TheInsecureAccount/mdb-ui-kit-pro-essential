@@ -171,7 +171,7 @@ class Autocomplete {
     this._input.setAttribute('role', 'combobox');
     this._input.setAttribute('aria-expanded', false);
     this._input.setAttribute('aria-owns', this._dropdownContainerId);
-    this._input.setAttribute('aria-haspoup', true);
+    this._input.setAttribute('aria-haspopup', true);
     this._input.setAttribute('autocomplete', 'off');
   }
 
@@ -549,6 +549,10 @@ class Autocomplete {
   _handleSelection(item) {
     const value = this._options.displayValue(item);
     const selectEvent = EventHandler.trigger(this._element, EVENT_SELECT, { value: item });
+
+    if (item === undefined) {
+      return;
+    }
 
     if (selectEvent.defaultPrevented) {
       return;

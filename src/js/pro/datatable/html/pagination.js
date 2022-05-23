@@ -1,8 +1,16 @@
 import { isRTL } from '../../../mdb/util/index';
 /* eslint-disable indent */
-const pagination = ({ text, entries, entriesOptions, fullPagination, rowsText }, loading) => {
+const pagination = (
+  { text, entries, entriesOptions, fullPagination, rowsText, allText },
+  loading
+) => {
   const options = entriesOptions
     .map((option) => {
+      if (option === 'All') {
+        return `<option value="${option}" ${
+          option === entries ? 'selected' : ''
+        }>${allText}</option>`;
+      }
       return `<option value="${option}" ${option === entries ? 'selected' : ''}>${option}</option>`;
     })
     .join('\n');

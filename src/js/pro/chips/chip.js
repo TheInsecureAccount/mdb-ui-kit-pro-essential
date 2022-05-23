@@ -15,7 +15,7 @@ import { getChip } from './templates';
 const NAME = 'chip';
 const DATA_KEY = `mdb.${NAME}`;
 const SELECTOR_CLOSE = '.close';
-const EVENT_DELETE = 'delete.mdb.chip';
+const EVENT_DELETE = 'delete.mdb.chips';
 const EVENT_SELECT = 'select.mdb.chip';
 
 const DefaultType = { text: 'string', closeIcon: 'boolean', img: 'object' };
@@ -84,8 +84,8 @@ class Chip {
     const deleteElement = SelectorEngine.find(SELECTOR_CLOSE, this._element);
     if (deleteElement.length === 0) return;
 
-    EventHandler.on(this._element, 'click', SELECTOR_CLOSE, (e) => {
-      EventHandler.trigger(EVENT_DELETE, e);
+    EventHandler.on(this._element, 'click', SELECTOR_CLOSE, () => {
+      EventHandler.trigger(this._element, EVENT_DELETE);
       this._element.remove();
     });
   }

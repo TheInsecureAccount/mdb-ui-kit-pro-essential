@@ -42,6 +42,11 @@ const DefaultType = {
   stepperMobileBreakpoint: 'number',
   stepperMobileBarBreakpoint: 'number',
   animations: 'boolean',
+  stepperHeadClick: 'boolean',
+  stepperMobileNextBtn: 'string',
+  stepperMobileBackBtn: 'string',
+  stepperMobileStepTxt: 'string',
+  stepperMobileOfTxt: 'string',
 };
 
 const Default = {
@@ -56,6 +61,11 @@ const Default = {
   stepperMobileBreakpoint: 0,
   stepperMobileBarBreakpoint: 4,
   animations: true,
+  stepperHeadClick: true,
+  stepperMobileNextBtn: 'NEXT',
+  stepperMobileBackBtn: 'BACK',
+  stepperMobileStepTxt: 'step',
+  stepperMobileOfTxt: 'of',
 };
 
 const EVENT_MOUSEDOWN = `mousedown${EVENT_KEY}`;
@@ -91,27 +101,33 @@ const BACK_BTN_CLASS = `${NAME}-back-btn`;
 const MOBILE_ACTIVE_STEP_ID = `${NAME}-active-step`;
 const MOBILE_NUMBER_OF_STEPS_ID = `${NAME}-all-steps`;
 
-const MOBILE_BUTTON_NEXT = `
+const MOBILE_BUTTON_NEXT = (options) => {
+  return `
   <div class="${NEXT_BTN_CLASS}">
-    <button class="btn btn-link">
-      NEXT
+    <button type="button" class="btn btn-link">
+      ${options.stepperMobileNextBtn}
       <i class="fas fa-chevron-right"></i>
     </button>
   </div>
 `;
-const MOBILE_BUTTON_BACK = `
+};
+const MOBILE_BUTTON_BACK = (options) => {
+  return `
   <div class="${BACK_BTN_CLASS}">
-    <button class="btn btn-link">
+    <button type="button" class="btn btn-link">
       <i class="fas fa-chevron-left"></i>
-      BACK
+      ${options.stepperMobileBackBtn}
     </button>
   </div>
 `;
-const MOBILE_STEPPER_HEAD = `
+};
+const MOBILE_STEPPER_HEAD = (options) => {
+  return `
   <div class ="${MOBILE_HEAD_CLASS} bg-light">
-    step <span id="${MOBILE_ACTIVE_STEP_ID}"></span> of <span id="${MOBILE_NUMBER_OF_STEPS_ID}"></span>
+    ${options.stepperMobileStepTxt} <span id="${MOBILE_ACTIVE_STEP_ID}"></span> ${options.stepperMobileOfTxt} <span id="${MOBILE_NUMBER_OF_STEPS_ID}"></span>
   </div>
 `;
+};
 const MOBILE_PROGRESS_BAR = `
   <div class="${MOBILE_PROGRESS_CLASS} gray-500">
     <div class="${MOBILE_PROGRESS_BAR_CLASS} bg-primary"></div>
@@ -191,7 +207,9 @@ class Stepper {
     }
 
     this._setOptional();
-    this._bindMouseDown();
+    if (this._options.stepperHeadClick) {
+      this._bindMouseDown();
+    }
     this._bindKeysNavigation();
 
     switch (this._options.stepperType) {
@@ -392,10 +410,10 @@ class Stepper {
       this._updateProgressBar();
     }
 
-    footer.insertAdjacentHTML('afterbegin', MOBILE_BUTTON_BACK);
-    footer.insertAdjacentHTML('beforeend', MOBILE_BUTTON_NEXT);
+    footer.insertAdjacentHTML('afterbegin', MOBILE_BUTTON_BACK(this._options));
+    footer.insertAdjacentHTML('beforeend', MOBILE_BUTTON_NEXT(this._options));
 
-    this._element.insertAdjacentHTML('afterbegin', MOBILE_STEPPER_HEAD);
+    this._element.insertAdjacentHTML('afterbegin', MOBILE_STEPPER_HEAD(this._options));
 
     const allStepsElement = SelectorEngine.findOne(`#${MOBILE_NUMBER_OF_STEPS_ID}`, this._element);
     allStepsElement.textContent = this._steps.length;
@@ -612,6 +630,14 @@ class Stepper {
     }
   }
 
+  _validateActiveStepRequiredElements() {
+    const isValid = SelectorEngine.find('[required]', this.activeStep).every((el) => {
+      return el.checkValidity() === true;
+    });
+
+    return isValid;
+  }
+
   _validateStep(index) {
     const numberOfSteps = this._steps.length;
     let result = true;
@@ -630,20 +656,29 @@ class Stepper {
 
     if (this._options.stepperLinear) {
       // prevent toggleStep if one of the steps is skipped
+      const stepsToCheck = index - this.activeStepIndex - 1;
       if (index > this._activeStepIndex + 1) {
-        result = false;
+        let nextStepToValidate = SelectorEngine.next(this.activeStep, 'li')[0];
+
+        for (let i = 0; i < stepsToCheck; i++) {
+          if (!nextStepToValidate.classList.contains('stepper-completed')) {
+            nextStepToValidate.classList.add('stepper-invalid');
+            result = false;
+          }
+          nextStepToValidate = SelectorEngine.next(nextStepToValidate, 'li')[0];
+        }
+      }
+
+      if (index < this._activeStepIndex) {
+        if (!this._validateActiveStepRequiredElements()) {
+          this.activeStep.classList.remove('stepper-completed');
+        }
       }
 
       if (index > this._activeStepIndex || index === numberOfSteps - 1) {
-        const requiredElements = SelectorEngine.find('[required]', this.activeStep);
-
-        const isValid = requiredElements.every((el) => {
-          return el.checkValidity() === true;
-        });
-
         this.activeStep.classList.add('was-validated');
 
-        if (!isValid) {
+        if (!this._validateActiveStepRequiredElements()) {
           this._toggleInvalid(this._activeStepIndex);
           EventHandler.trigger(this.activeStep, EVENT_INVALID);
           // wait for other elements transition end

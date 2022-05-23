@@ -48,7 +48,7 @@ const TYPE_OPTIONS = {
   color: '(string|null)',
   defaultValue: 'string',
   edit: 'boolean',
-  entries: 'number',
+  entries: '(number|string)',
   entriesOptions: 'array',
   fullPagination: 'boolean',
   hover: 'boolean',
@@ -67,6 +67,8 @@ const TYPE_OPTIONS = {
   fixedHeader: 'boolean',
   striped: 'boolean',
   rowsText: 'string',
+  ofText: 'string',
+  allText: 'string',
 };
 
 const TYPE_COLUMN_FIELDS = {
@@ -107,6 +109,8 @@ const DEFAULT_OPTIONS = {
   sortOrder: 'asc',
   striped: false,
   rowsText: 'Rows per page:',
+  ofText: 'of',
+  allText: 'All',
 };
 
 const DEFAUL_COLUMN = {
@@ -130,7 +134,6 @@ class Datatable {
     this._element = element;
 
     this._options = this._getOptions(options);
-
     this._sortField = this._options.sortField;
     this._sortOrder = this._options.sortOrder;
     this._sortReverse = false;
@@ -150,7 +153,6 @@ class Datatable {
     this._selected = [];
     this._checkboxes = null;
     this._headerCheckbox = null;
-
     this._rows = this._getRows(data.rows);
     this._columns = this._getColumns(data.columns);
 
@@ -223,24 +225,45 @@ class Datatable {
     }
 
     if (this._options.pagination) {
-      result = paginate({
-        rows: result,
-        entries: this._options.entries,
-        activePage: this._activePage,
-      });
+      if (this._options.entries === 'All') {
+        result = paginate({
+          rows: result,
+          entries: result.length,
+          activePage: this._activePage,
+        });
+      } else {
+        result = paginate({
+          rows: result,
+          entries: this._options.entries,
+          activePage: this._activePage,
+        });
+      }
     }
+
     return result;
   }
 
   get pages() {
+    if (this._options.entries === 'All') {
+      return 1;
+    }
     return Math.ceil(this.rows.length / this._options.entries);
   }
 
   get navigationText() {
     const firstVisibleEntry = this._activePage * this._options.entries;
-    return `${firstVisibleEntry + 1} - ${this.computedRows.length + firstVisibleEntry} of ${
-      this.searchResult.length
-    }`;
+
+    if (this.searchResult.length === 0) {
+      return `0 ${this._options.ofText} 0`;
+    }
+
+    if (this._options.entries === 'All') {
+      return `1 - ${this.searchResult.length} ${this._options.ofText} ${this.searchResult.length}`;
+    }
+
+    return `${firstVisibleEntry + 1} - ${this.computedRows.length + firstVisibleEntry} ${
+      this._options.ofText
+    } ${this.searchResult.length}`;
   }
 
   get classNames() {
@@ -277,6 +300,8 @@ class Datatable {
         entriesOptions: this._options.entriesOptions,
         fullPagination: this._options.fullPagination,
         rowsText: this._options.rowsText,
+        ofText: this._options.ofText,
+        allText: this._options.allText,
       },
     };
   }
@@ -440,7 +465,7 @@ class Datatable {
   }
 
   _setEntries(e) {
-    this._options = this._getOptions({ ...this._options, entries: Number(e.target.value) });
+    this._options = this._getOptions({ ...this._options, entries: e.target.value });
 
     if (this._activePage > this.pages - 1) {
       this._activePage = this.pages - 1;
@@ -725,7 +750,6 @@ class Datatable {
 
     if (this._options.pagination) {
       const navigation = SelectorEngine.findOne(SELECTOR_PAGINATION_NAV, this._element);
-
       navigation.innerText = this.navigationText;
     }
 
