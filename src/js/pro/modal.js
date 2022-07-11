@@ -37,6 +37,7 @@ const MODAL_BOTTOM_LEFT_CLASS = 'modal-bottom-left';
 const MODAL_TOP_RIGHT_CLASS = 'modal-top-right';
 const MODAL_TOP_LEFT_CLASS = 'modal-top-left';
 const MODAL_DIALOG_SCROLLABLE_CLASS = 'modal-dialog-scrollable';
+const MODAL_DIALOG_CLASS = 'modal-dialog';
 
 const SELECTOR_DATA_TOGGLE = '[data-mdb-toggle="modal"]';
 const SELECTOR_MODAL_CONTENT = `.${MODAL_CONTENT_CLASS}`;
@@ -46,6 +47,7 @@ const SELECTOR_MODAL_BOTTOM_LEFT = `.${MODAL_BOTTOM_LEFT_CLASS}`;
 const SELECTOR_MODAL_TOP_RIGHT = `.${MODAL_TOP_RIGHT_CLASS}`;
 const SELECTOR_MODAL_TOP_LEFT = `.${MODAL_TOP_LEFT_CLASS}`;
 const SELECTOR_MODAL_DIALOG_SCROLLABLE = `.${MODAL_DIALOG_SCROLLABLE_CLASS}`;
+const SELECTOR_MODAL_DIALOG = `.${MODAL_DIALOG_CLASS}`;
 
 const EVENT_MOUSEDOWN_DATA_API = `mousedown${EVENT_KEY}${DATA_API_KEY}`;
 const EVENT_SHOW_BS_MODAL = `show${EVENT_KEY}`;
@@ -80,8 +82,8 @@ class Modal extends BSModal {
   constructor(element, data) {
     super(element, data);
     this._config = this._getConfig(data);
-    this._modalRect = '';
-    this._modalComputedStyles = '';
+    this._modalContentRect = '';
+    this._modalContentComputedStyles = '';
     this._isNonInvasive = this._config.modalNonInvasive;
     this._isScrollable = '';
     this._isBottomRight = '';
@@ -100,6 +102,7 @@ class Modal extends BSModal {
       this._onModalShow();
       this._onModalShown();
       this._onModalHidden();
+      this._listenToWindowResize();
     }
     Data.setData(element, DATA_KEY, this);
 
@@ -119,8 +122,8 @@ class Modal extends BSModal {
     EventHandler.off(this._element, EVENT_HIDDEN_BS_MODAL);
     EventHandler.off(this._element, EVENT_HIDE_PREVENTED_BS_MODAL);
 
-    this._modalRect = null;
-    this._modalComputedStyles = null;
+    this._modalContentRect = null;
+    this._modalContentComputedStyles = null;
     this._isNonInvasive = null;
     this._isScrollable = null;
     this._isBottomRight = null;
@@ -144,7 +147,7 @@ class Modal extends BSModal {
 
   _onModalShown() {
     EventHandler.on(this._element, EVENT_SHOWN_BS_MODAL, () => {
-      const modalDialog = SelectorEngine.findOne(SELECTOR_MODAL_CONTENT, this._element);
+      const modalContent = SelectorEngine.findOne(SELECTOR_MODAL_CONTENT, this._element);
 
       this._isScrollable = SelectorEngine.findOne(SELECTOR_MODAL_DIALOG_SCROLLABLE, this._element);
       this._isBottomRight = SelectorEngine.findOne(SELECTOR_MODAL_BOTTOM_RIGHT, this._element);
@@ -155,12 +158,47 @@ class Modal extends BSModal {
       this._isSideBottomModal = this._isBottomLeft || this._isBottomRight;
       this._isSideModal = this._isSideTopModal || this._isSideBottomModal;
       this._isModalBottom = SelectorEngine.findOne(SELECTOR_MODAL_BOTTOM, this._element);
-      this._modalRect = modalDialog.getBoundingClientRect();
-      this._modalComputedStyles = window.getComputedStyle(modalDialog);
+      this._modalContentRect = modalContent.getBoundingClientRect();
+      this._modalContentComputedStyles = window.getComputedStyle(modalContent);
+      this._modalDialogComputedStyles = window.getComputedStyle(
+        SelectorEngine.findOne(SELECTOR_MODAL_DIALOG, this._element)
+      );
+      this._topOffset = parseInt(this._modalDialogComputedStyles.top, 0);
+      this._leftOffset = parseInt(this._modalDialogComputedStyles.left, 0);
+      this._rightOffset = parseInt(this._modalDialogComputedStyles.right, 0);
+      this._bottomOffset = parseInt(this._modalDialogComputedStyles.bottom, 0);
 
       this._addOpenClass();
       this._setStyles();
     });
+  }
+
+  _listenToWindowResize() {
+    EventHandler.on(window, 'resize', this._handleWindowResize.bind(this));
+  }
+
+  _handleWindowResize() {
+    const modalContent = SelectorEngine.findOne(SELECTOR_MODAL_CONTENT, this._element);
+    this._resetStyles();
+
+    this._modalContentRect = modalContent.getBoundingClientRect();
+    this._modalContentComputedStyles = window.getComputedStyle(modalContent);
+
+    if (this._isSideTopModal || this._isSideBottomModal) {
+      let sideOffset = 0;
+      let topOffset = 0;
+      if (this._isBottomRight || this._isBottomLeft) {
+        topOffset = -this._bottomOffset;
+      }
+      if (this._isBottomRight || this._isTopRight) {
+        sideOffset = -this._rightOffset;
+      }
+      if (this._isBottomLeft || this._isTopLeft) {
+        sideOffset = this._leftOffset;
+      }
+
+      this._setStyles(sideOffset, topOffset);
+    }
   }
 
   _showBackdrop(callback) {
@@ -223,19 +261,19 @@ class Modal extends BSModal {
     }
   }
 
-  _setStyles() {
+  _setStyles(leftOffset = 0, topOffset = 0) {
     const isAboveBreakpoint = window.innerWidth >= MODAL_CSS_BREAKPOINT;
-    this._element.style.left = `${this._modalRect.left}px`;
-    this._element.style.width = this._modalComputedStyles.width;
+    this._element.style.left = `${this._modalContentRect.left + leftOffset}px`;
+    this._element.style.width = this._modalContentComputedStyles.width;
 
     if (!this._isScrollable) {
-      this._element.style.height = this._modalComputedStyles.height;
+      this._element.style.height = this._modalContentComputedStyles.height;
       this._element.style.display = '';
     }
 
     if (isAboveBreakpoint) {
       if (this._isSideBottomModal || this._isModalBottom) {
-        this._element.style.top = `${this._modalRect.top}px`;
+        this._element.style.top = `${this._modalContentRect.top + topOffset}px`;
       }
 
       if (this._isSideModal) {

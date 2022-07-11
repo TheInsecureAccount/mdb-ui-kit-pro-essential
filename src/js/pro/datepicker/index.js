@@ -95,6 +95,9 @@ const SELECTOR_DATES_CONTAINER = '.datepicker-view';
 
 const Default = {
   title: 'Select date',
+  container: 'body',
+  disablePast: false,
+  disableFuture: false,
   monthsFull: [
     'January',
     'February',
@@ -148,6 +151,9 @@ const Default = {
 
 const DefaultType = {
   title: 'string',
+  container: 'string',
+  disablePast: 'boolean',
+  disableFuture: 'boolean',
   monthsFull: 'array',
   monthsShort: 'array',
   weekdaysFull: 'array',
@@ -345,6 +351,10 @@ class Datepicker {
     return config;
   }
 
+  _getContainer() {
+    return SelectorEngine.findOne(this._options.container);
+  }
+
   _getNewDaysOrderArray(config) {
     const index = config.startDay;
 
@@ -443,18 +453,20 @@ class Datepicker {
     this._popper = createPopper(this._input, template, {
       placement: 'bottom-start',
     });
-    document.body.appendChild(template);
+    const container = this._getContainer();
+    container.appendChild(template);
   }
 
   _openModal(backdrop, template) {
-    document.body.appendChild(backdrop);
-    document.body.appendChild(template);
+    const container = this._getContainer();
+    container.appendChild(backdrop);
+    container.appendChild(template);
     const hasVerticalScroll = window.innerWidth > document.documentElement.clientWidth;
     const scrollHeight = '15px';
 
     if (hasVerticalScroll) {
-      document.body.style.overflow = 'hidden';
-      document.body.style.paddingRight = scrollHeight;
+      container.style.overflow = 'hidden';
+      container.style.paddingRight = scrollHeight;
     }
   }
 
@@ -894,11 +906,11 @@ class Datepicker {
 
   _closeDropdown() {
     const datepicker = SelectorEngine.findOne('.datepicker-dropdown-container');
-
+    const container = this._getContainer();
     if (this._animations) {
       datepicker.addEventListener('animationend', () => {
         if (datepicker) {
-          document.body.removeChild(datepicker);
+          container.removeChild(datepicker);
         }
 
         if (this._popper) {
@@ -907,7 +919,7 @@ class Datepicker {
       });
     } else {
       if (datepicker) {
-        document.body.removeChild(datepicker);
+        container.removeChild(datepicker);
       }
 
       if (this._popper) {
@@ -940,10 +952,12 @@ class Datepicker {
   }
 
   _removePicker(backdrop, datepicker) {
-    document.body.removeChild(backdrop);
-    document.body.removeChild(datepicker);
-    document.body.style.overflow = '';
-    document.body.style.paddingRight = '';
+    const container = this._getContainer();
+
+    container.removeChild(backdrop);
+    container.removeChild(datepicker);
+    container.style.overflow = '';
+    container.style.paddingRight = '';
   }
 
   _removeFocusTrap() {
@@ -1011,9 +1025,9 @@ class Datepicker {
   }
 
   _selectDate(date, cell = this.activeCell) {
-    const { min, max, filter } = this._options;
+    const { min, max, filter, disablePast, disableFuture } = this._options;
 
-    if (isDateDisabled(date, min, max, filter)) {
+    if (isDateDisabled(date, min, max, filter, disablePast, disableFuture)) {
       return;
     }
 
@@ -1173,9 +1187,9 @@ class Datepicker {
 
   _pickDay(day, el) {
     const date = convertStringToDate(day);
-    const { min, max, filter } = this._options;
+    const { min, max, filter, disablePast, disableFuture } = this._options;
 
-    if (isDateDisabled(date, min, max, filter)) {
+    if (isDateDisabled(date, min, max, filter, disablePast, disableFuture)) {
       return;
     }
 
@@ -1184,9 +1198,9 @@ class Datepicker {
   }
 
   _pickYear(year) {
-    const { min, max } = this._options;
+    const { min, max, disablePast, disableFuture } = this._options;
 
-    if (isYearDisabled(year, min, max)) {
+    if (isYearDisabled(year, min, max, disablePast, disableFuture)) {
       return;
     }
 
@@ -1198,9 +1212,12 @@ class Datepicker {
   }
 
   _pickMonth(month, year) {
-    const { min, max } = this._options;
+    const { min, max, disablePast, disableFuture } = this._options;
 
-    if (isMonthDisabled(month, year, min, max) || isYearDisabled(year, min, max)) {
+    if (
+      isMonthDisabled(month, year, min, max, disablePast, disableFuture) ||
+      isYearDisabled(year, min, max, disablePast, disableFuture)
+    ) {
       return;
     }
 
@@ -1360,6 +1377,7 @@ class Datepicker {
   _updateControlsDisabledState() {
     if (
       isNextDateDisabled(
+        this._options.disableFuture,
         this._activeDate,
         this._view,
         YEARS_IN_VIEW,
@@ -1376,6 +1394,7 @@ class Datepicker {
 
     if (
       isPreviousDateDisabled(
+        this._options.disablePast,
         this._activeDate,
         this._view,
         YEARS_IN_VIEW,

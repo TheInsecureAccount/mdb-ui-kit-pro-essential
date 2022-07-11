@@ -826,7 +826,7 @@ class Datatable {
       }
     }
 
-    if (this._activePage === this.pages - 1 || this._options.loading) {
+    if (this._activePage === this.pages - 1 || this._options.loading || this.pages === 0) {
       this._paginationRight.setAttribute('disabled', true);
 
       if (this._options.fullPagination) {

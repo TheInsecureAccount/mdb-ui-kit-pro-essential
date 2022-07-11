@@ -358,7 +358,11 @@ class Chart {
   update(data, config) {
     this._data = { ...this._data, ...data };
     this._chart.data = this._data;
-    this._chart.update(config);
+
+    this._options = { ...this._options, ...config };
+    this._chart.options = merge(this._chart.options, this._options);
+
+    this._chart.update();
   }
 
   // Private

@@ -38,6 +38,7 @@ const Default = {
   appendValidationInfo: true,
   inline: false,
   toggleButton: true,
+  container: 'body',
   disabled: false,
   defaultTime: '',
   defaultDate: '',
@@ -51,6 +52,7 @@ const DefaultType = {
   appendValidationInfo: 'boolean',
   inline: 'boolean',
   toggleButton: 'boolean',
+  container: 'string',
   disabled: 'boolean',
   defaultTime: '(string|date|number)',
   defaultDate: '(string|date|number)',
@@ -94,16 +96,27 @@ class Datetimepicker {
   dispose() {
     EventHandler.off(this._element, 'click', this._openDatePicker);
     EventHandler.off(this._input, 'input', this._handleInput);
+    EventHandler.off(this._element, 'click');
     Data.removeData(this._element, DATA_KEY);
-    this._element = null;
-    this._options = null;
-    this._input = null;
+
+    this._removeTimePicker();
+    this._removeDatepicker();
+    this.toggleButton.remove();
+
+    this._options = Default;
     this._timepicker = null;
     this._datepicker = null;
     this._dateValue = null;
     this._timeValue = null;
     this._isInvalidTimeFormat = null;
     this._validationInfo = null;
+  }
+
+  update(options = {}) {
+    this.dispose();
+    this._options = this._getConfig({ ...this._options, ...options });
+
+    this._init();
   }
 
   // Private
@@ -120,6 +133,13 @@ class Datetimepicker {
     this._applyFormatPlaceholder();
   }
 
+  _removeDatepicker() {
+    const datepicker = this._element.querySelector('.datepicker');
+    if (datepicker) {
+      datepicker.remove();
+    }
+  }
+
   _addDatepicker() {
     const DATEPICKER_WRAPPER = element('div');
     DATEPICKER_WRAPPER.id = getUID('datepicker-');
@@ -131,13 +151,23 @@ class Datetimepicker {
     this._element.appendChild(DATEPICKER_WRAPPER);
     Manipulator.style(DATEPICKER_WRAPPER, { display: 'none' });
 
+    let datepickerOptions = {
+      ...this._options.datepicker,
+      ...{ container: this._options.container },
+    };
+
     if (this._options.inline) {
-      const options = { ...this._options.datepicker, ...{ inline: true } };
-      this._datepicker = new Datepicker(DATEPICKER_WRAPPER, options);
-    } else {
-      this._datepicker = new Datepicker(DATEPICKER_WRAPPER, this._options.datepicker);
+      datepickerOptions = { ...datepickerOptions, ...{ inline: true } };
     }
+    this._datepicker = new Datepicker(DATEPICKER_WRAPPER, datepickerOptions);
     this._datepicker._input.value = this._dateValue;
+  }
+
+  _removeTimePicker() {
+    const timepicker = this._element.querySelector('.timepicker');
+    if (timepicker) {
+      timepicker.remove();
+    }
   }
 
   _addTimePicker() {
@@ -151,12 +181,16 @@ class Datetimepicker {
     this._element.appendChild(TIMEPICKER_WRAPPER);
     Manipulator.style(TIMEPICKER_WRAPPER, { display: 'none' });
 
+    let timepickerOptions = {
+      ...this._options.timepicker,
+      ...{ container: this._options.container },
+    };
+
     if (this._options.inline) {
-      const options = { ...this._options.timepicker, ...{ inline: true } };
-      this._timepicker = new Timepicker(TIMEPICKER_WRAPPER, options);
-    } else {
-      this._timepicker = new Timepicker(TIMEPICKER_WRAPPER, this._options.timepicker);
+      timepickerOptions = { timepickerOptions, ...{ inline: true } };
     }
+
+    this._timepicker = new Timepicker(TIMEPICKER_WRAPPER, timepickerOptions);
     this._timepicker.input.value = this._timeValue;
   }
 
@@ -181,17 +215,23 @@ class Datetimepicker {
     }
   }
 
+  _enableOrDisableToggleButton() {
+    if (this._options.disabled) {
+      this.toggleButton.disabled = true;
+      this.toggleButton.style.pointerEvents = 'none';
+    } else {
+      this.toggleButton.disabled = false;
+      this.toggleButton.style.pointerEvents = 'pointer';
+    }
+  }
+
   _appendToggleButton() {
     if (!this._options.toggleButton) {
       return;
     }
-
     this._element.insertAdjacentHTML('beforeend', TOGGLE_BUTTON);
 
-    if (this._options.disabled) {
-      this.toggleButton.disabled = true;
-      this.toggleButton.style.pointerEvents = 'none';
-    }
+    this._enableOrDisableToggleButton();
   }
 
   _appendValidationInfo() {

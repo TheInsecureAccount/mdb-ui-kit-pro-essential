@@ -295,7 +295,14 @@ function getDatesArray(activeDate, headerDate, options) {
           isSelected: headerDate && isSameDate(date, headerDate),
           isToday: isSameDate(date, getToday()),
           dayNumber: getDate(date),
-          disabled: isDateDisabled(date, options.min, options.max, options.filter),
+          disabled: isDateDisabled(
+            date,
+            options.min,
+            options.max,
+            options.filter,
+            options.disablePast,
+            options.disableFuture
+          ),
         });
       }
 
@@ -311,7 +318,14 @@ function getDatesArray(activeDate, headerDate, options) {
           isSelected: headerDate && isSameDate(date, headerDate),
           isToday: isSameDate(date, getToday()),
           dayNumber: getDate(date),
-          disabled: isDateDisabled(date, options.min, options.max, options.filter),
+          disabled: isDateDisabled(
+            date,
+            options.min,
+            options.max,
+            options.filter,
+            options.disablePast,
+            options.disableFuture
+          ),
         });
         dayNumber++;
       }
@@ -331,7 +345,14 @@ function getDatesArray(activeDate, headerDate, options) {
           isSelected: headerDate && isSameDate(date, headerDate),
           isToday: isSameDate(date, getToday()),
           dayNumber: getDate(date),
-          disabled: isDateDisabled(date, options.min, options.max, options.filter),
+          disabled: isDateDisabled(
+            date,
+            options.min,
+            options.max,
+            options.filter,
+            options.disablePast,
+            options.disableFuture
+          ),
         });
         dayNumber++;
       }
@@ -357,7 +378,16 @@ export function createMonthViewTemplate(year, selectedYear, selectedMonth, optio
                 const monthIndex = options.monthsShort.indexOf(month);
                 return `
                 <td class="datepicker-cell datepicker-large-cell datepicker-month-cell ${
-                  isMonthDisabled(monthIndex, year, options.min, options.max) ? 'disabled' : ''
+                  isMonthDisabled(
+                    monthIndex,
+                    year,
+                    options.min,
+                    options.max,
+                    options.disablePast,
+                    options.disableFuture
+                  )
+                    ? 'disabled'
+                    : ''
                 } ${monthIndex === selectedMonth && year === selectedYear ? 'selected' : ''} ${
                   monthIndex === currentMonth && year === currentYear ? 'current' : ''
                 }" data-mdb-month="${monthIndex}" data-mdb-year="${year}" aria-label="${month}, ${year}">
@@ -412,7 +442,15 @@ export function createYearViewTemplate(date, selectedYear, options, yearsInView,
             .map((year) => {
               return `
               <td class="datepicker-cell datepicker-large-cell datepicker-year-cell ${
-                isYearDisabled(year, options.min, options.max) ? 'disabled' : ''
+                isYearDisabled(
+                  year,
+                  options.min,
+                  options.max,
+                  options.disablePast,
+                  options.disableFuture
+                )
+                  ? 'disabled'
+                  : ''
               } ${year === selectedYear ? 'selected' : ''} ${
                 year === currentYear ? 'current' : ''
               }" aria-label="${year}" data-mdb-year="${year}">

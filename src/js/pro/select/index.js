@@ -415,6 +415,7 @@ class Select {
         this._scrollToOption(this._activeOption);
         break;
       case ENTER:
+        event.preventDefault();
         if (this._activeOption) {
           if (this.hasSelectAll && this._activeOptionIndex === 0) {
             this._handleSelectAll();
@@ -431,6 +432,7 @@ class Select {
   }
 
   _handleClosedKeydown(event) {
+    event.preventDefault();
     const key = event.keyCode;
     const isOpenKey =
       key === ENTER ||
@@ -844,11 +846,13 @@ class Select {
   }
 
   _updateLabelPosition() {
+    const isInitialized = Manipulator.hasClass(this._element, CLASS_NAME_INITIALIZED);
+    const isValueEmpty = this._input.value !== '';
     if (!this._label) {
       return;
     }
 
-    if (this._input.value !== '' || this._isOpen || this._isFakeValueActive) {
+    if (isInitialized && (isValueEmpty || this._isOpen || this._isFakeValueActive)) {
       Manipulator.addClass(this._label, CLASS_NAME_ACTIVE);
     } else {
       Manipulator.removeClass(this._label, CLASS_NAME_ACTIVE);
@@ -1318,7 +1322,16 @@ class Select {
 
   _destroyMaterialTemplate() {
     const wrapperParent = this._wrapper.parentNode;
+    const labels = SelectorEngine.find('label', this._wrapper);
+
     wrapperParent.appendChild(this._element);
+    labels.forEach((label) => {
+      wrapperParent.appendChild(label);
+    });
+
+    labels.forEach((label) => {
+      Manipulator.removeClass(label, CLASS_NAME_ACTIVE);
+    });
     Manipulator.removeClass(this._element, CLASS_NAME_INITIALIZED);
     wrapperParent.removeChild(this._wrapper);
   }
@@ -1331,7 +1344,9 @@ class Select {
     const isMultipleValue = Array.isArray(value);
 
     if (isMultipleValue) {
-      value.forEach((selectionValue) => this._selectByValue(selectionValue));
+      value.forEach((selectionValue) => {
+        this._selectByValue(selectionValue);
+      });
     } else {
       this._selectByValue(value);
     }

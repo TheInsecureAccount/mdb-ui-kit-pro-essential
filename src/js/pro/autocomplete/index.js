@@ -15,6 +15,7 @@ import { sanitizeHtml, DefaultWhitelist } from '../../mdb/util/sanitizer';
 
 const Default = {
   autoSelect: false,
+  container: 'body',
   customContent: '',
   debounce: 300,
   displayValue: (value) => value,
@@ -27,6 +28,7 @@ const Default = {
 
 const DefaultType = {
   autoSelect: 'boolean',
+  container: 'string',
   customContent: 'string',
   debounce: 'number',
   displayValue: 'function',
@@ -67,6 +69,7 @@ class Autocomplete {
   constructor(element, options) {
     this._element = element;
     this._options = this._getConfig(options);
+    this._getContainer();
     this._input = SelectorEngine.findOne(SELECTOR_INPUT, element);
     this._label = SelectorEngine.findOne(SELECTOR_LABEL, element);
     this._customContent = SelectorEngine.findOne(SELECTOR_CUSTOM_CONTENT, element);
@@ -115,6 +118,10 @@ class Autocomplete {
 
   initSearch(value) {
     this._filterResults(value);
+  }
+
+  _getContainer() {
+    this._container = SelectorEngine.findOne(this._options.container);
   }
 
   _getConfig(config) {
@@ -394,6 +401,7 @@ class Autocomplete {
         this._scrollToItem(this._activeItem);
         break;
       case ENTER:
+        event.preventDefault();
         if (this._activeItemIndex > -1) {
           const item = this._filteredResults[this._activeItemIndex];
           this._handleSelection(item);
@@ -455,6 +463,7 @@ class Autocomplete {
   }
 
   _handleClosedKeydown(event) {
+    event.preventDefault();
     const key = event.keyCode;
     const isOpenKey = key === ENTER || key === DOWN_ARROW || key === DOWN_ARROW;
 
@@ -482,7 +491,7 @@ class Autocomplete {
         },
       ],
     });
-    document.body.appendChild(this._dropdownContainer);
+    this._container.appendChild(this._dropdownContainer);
 
     this._listenToOutsideClick();
     this._listenToItemsClick();
@@ -611,7 +620,7 @@ class Autocomplete {
       this._popper.destroy();
 
       if (this._dropdownContainer) {
-        document.body.removeChild(this._dropdownContainer);
+        this._container.removeChild(this._dropdownContainer);
       }
 
       this._isOpen = false;
