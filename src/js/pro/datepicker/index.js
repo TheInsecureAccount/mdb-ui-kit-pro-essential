@@ -3,6 +3,7 @@ import Data from '../../mdb/dom/data';
 import EventHandler from '../../mdb/dom/event-handler';
 import Manipulator from '../../mdb/dom/manipulator';
 import SelectorEngine from '../../mdb/dom/selector-engine';
+import ScrollBarHelper from '../../bootstrap/mdb-prefix/util/scrollbar';
 import {
   typeCheckConfig,
   getjQuery,
@@ -218,6 +219,8 @@ class Datepicker {
     this._animations =
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches && this._options.animations;
 
+    this._scrollBar = new ScrollBarHelper();
+
     if (this._element) {
       Data.setData(element, DATA_KEY, this);
     }
@@ -404,7 +407,7 @@ class Datepicker {
       this._options,
       MONTHS_IN_ROW,
       YEARS_IN_VIEW,
-      YEARS_IN_VIEW,
+      YEARS_IN_ROW,
       this._toggleButtonId
     );
 
@@ -412,6 +415,7 @@ class Datepicker {
       this._openDropdown(template);
     } else {
       this._openModal(backdrop, template);
+      this._scrollBar.hide();
     }
 
     if (this._animations) {
@@ -461,13 +465,6 @@ class Datepicker {
     const container = this._getContainer();
     container.appendChild(backdrop);
     container.appendChild(template);
-    const hasVerticalScroll = window.innerWidth > document.documentElement.clientWidth;
-    const scrollHeight = '15px';
-
-    if (hasVerticalScroll) {
-      container.style.overflow = 'hidden';
-      container.style.paddingRight = scrollHeight;
-    }
   }
 
   _setFocusTrap(element) {
@@ -945,9 +942,11 @@ class Datepicker {
     if (this._animations) {
       backdrop.addEventListener('animationend', () => {
         this._removePicker(backdrop, datepicker);
+        this._scrollBar.reset();
       });
     } else {
       this._removePicker(backdrop, datepicker);
+      this._scrollBar.reset();
     }
   }
 
@@ -956,8 +955,6 @@ class Datepicker {
 
     container.removeChild(backdrop);
     container.removeChild(datepicker);
-    container.style.overflow = '';
-    container.style.paddingRight = '';
   }
 
   _removeFocusTrap() {

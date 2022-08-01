@@ -115,6 +115,22 @@
   }
 }
 
+.sidenav-subheading {
+  color: unset;
+  text-transform: uppercase;
+  font-size: $sidenav-subheading-font-size;
+  padding: $sidenav-subheading-padding-y $sidenav-subheading-padding-x;
+  font-weight: $sidenav-subheading-fw;
+}
+
+.sidenav-sm {
+  .sidenav-link {
+    padding-top: $sidenav-sm-link-pt;
+    padding-bottom: $sidenav-sm-link-pb;
+    height: initial;
+  }
+}
+
 .rotate-icon {
   position: absolute;
   right: 0;

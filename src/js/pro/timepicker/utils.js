@@ -109,7 +109,16 @@ const findMousePosition = ({ clientX, clientY, touches }, object, isMobile = fal
 };
 
 const checkBrowser = () => {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  let result = false;
+  if (
+    (navigator.maxTouchPoints &&
+      navigator.maxTouchPoints > 2 &&
+      /MacIntel/.test(navigator.platform)) ||
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  ) {
+    result = true;
+  }
+  return result;
 };
 
 const takeValue = (element, isInput = true) => {

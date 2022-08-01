@@ -463,7 +463,9 @@ class Autocomplete {
   }
 
   _handleClosedKeydown(event) {
-    event.preventDefault();
+    if (event.key === 'Enter') {
+      event.preventDefault();
+    }
     const key = event.keyCode;
     const isOpenKey = key === ENTER || key === DOWN_ARROW || key === DOWN_ARROW;
 

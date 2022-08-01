@@ -57,7 +57,7 @@ export function getWrapperTemplate(id, config, label) {
   }
 
   if (config.validation) {
-    Manipulator.addStyle(input, { 'pointer-events': 'none' });
+    Manipulator.addStyle(input, { 'pointer-events': 'none', 'caret-color': 'transparent' });
     Manipulator.addStyle(formOutline, { cursor: 'pointer' });
   } else {
     input.setAttribute('readonly', 'true');

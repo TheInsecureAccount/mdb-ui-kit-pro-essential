@@ -432,8 +432,10 @@ class Select {
   }
 
   _handleClosedKeydown(event) {
-    event.preventDefault();
     const key = event.keyCode;
+    if (key === ENTER) {
+      event.preventDefault();
+    }
     const isOpenKey =
       key === ENTER ||
       (key === DOWN_ARROW && event.altKey) ||
@@ -1144,7 +1146,7 @@ class Select {
       return;
     }
 
-    if (this._config.filter) {
+    if (this._config.filter && this.hasSelectAll) {
       this._resetFilterState();
       this._updateOptionsListTemplate(this._optionsToRender);
       if (this._config.multiple) {

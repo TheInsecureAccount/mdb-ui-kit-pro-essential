@@ -1,6 +1,7 @@
 import { getjQuery, element, getUID, typeCheckConfig } from '../../mdb/util/index';
 import { getDelimeters, parseDate, isValidDate, isValidTime } from './utils';
 import { ICON_BUTTONS, TOGGLE_BUTTON } from './templates';
+import ScrollBarHelper from '../../bootstrap/mdb-prefix/util/scrollbar';
 import Data from '../../mdb/dom/data';
 import EventHandler from '../../mdb/dom/event-handler';
 import Manipulator from '../../mdb/dom/manipulator';
@@ -40,6 +41,8 @@ const Default = {
   toggleButton: true,
   container: 'body',
   disabled: false,
+  disablePast: false,
+  disableFuture: false,
   defaultTime: '',
   defaultDate: '',
   timepicker: {},
@@ -54,6 +57,8 @@ const DefaultType = {
   toggleButton: 'boolean',
   container: 'string',
   disabled: 'boolean',
+  disablePast: 'boolean',
+  disableFuture: 'boolean',
   defaultTime: '(string|date|number)',
   defaultDate: '(string|date|number)',
   timepicker: 'object',
@@ -75,6 +80,8 @@ class Datetimepicker {
     this._validationInfo = null;
     this._format = this._options.datepicker.format ? this._options.datepicker.format : 'dd/mm/yyyy';
     this._cancel = false;
+
+    this._scrollBar = new ScrollBarHelper();
 
     if (this._element) {
       Data.setData(element, DATA_KEY, this);
@@ -113,8 +120,9 @@ class Datetimepicker {
   }
 
   update(options = {}) {
+    const tempOptions = this._getConfig({ ...this._options, ...options });
     this.dispose();
-    this._options = this._getConfig({ ...this._options, ...options });
+    this._options = tempOptions;
 
     this._init();
   }
@@ -131,6 +139,13 @@ class Datetimepicker {
     this._setInitialDefaultInput();
     this._appendValidationInfo();
     this._applyFormatPlaceholder();
+
+    if (this._options.disablePast) {
+      this._handleTimepickerDisablePast();
+    }
+    if (this._options.disableFuture) {
+      this._handleTimepickerDisableFuture();
+    }
   }
 
   _removeDatepicker() {
@@ -153,10 +168,14 @@ class Datetimepicker {
 
     let datepickerOptions = {
       ...this._options.datepicker,
-      ...{ container: this._options.container },
+      ...{
+        container: this._options.container,
+        disablePast: this._options.disablePast,
+        disableFuture: this._options.disableFuture,
+      },
     };
 
-    if (this._options.inline) {
+    if (this._options.inline || this._options.datepicker.inline) {
       datepickerOptions = { ...datepickerOptions, ...{ inline: true } };
     }
     this._datepicker = new Datepicker(DATEPICKER_WRAPPER, datepickerOptions);
@@ -167,6 +186,7 @@ class Datetimepicker {
     const timepicker = this._element.querySelector('.timepicker');
     if (timepicker) {
       timepicker.remove();
+      this._scrollBar.reset();
     }
   }
 
@@ -186,7 +206,7 @@ class Datetimepicker {
       ...{ container: this._options.container },
     };
 
-    if (this._options.inline) {
+    if (this._options.inline || this._options.timepicker.inline) {
       timepickerOptions = { timepickerOptions, ...{ inline: true } };
     }
 
@@ -198,14 +218,16 @@ class Datetimepicker {
     Manipulator.addClass(BUTTONS_WRAPPER, 'buttons-container');
     BUTTONS_WRAPPER.innerHTML = ICON_BUTTONS;
 
-    if (this._options.inline) {
+    if (this._options.inline || this._options.datepicker.inline) {
       return;
     }
+
+    this._scrollBar.hide();
 
     if (this._datepicker._isOpen) {
       const headerDate = SelectorEngine.findOne(`${SELECTOR_DATEPICKER}-header`, document.body);
       headerDate.appendChild(BUTTONS_WRAPPER);
-    } else if (this._timepicker._modal) {
+    } else if (this._timepicker._modal && !this._options.timepicker.inline) {
       const header = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-elements`, document.body);
       const headerTime = SelectorEngine.findOne(
         `${SELECTOR_TIMEPICKER}-clock-wrapper`,
@@ -262,6 +284,7 @@ class Datetimepicker {
     EventHandler.one(DATEPICKER_CANCEL_BTN, 'mousedown', () => {
       Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
       this._cancel = true;
+      this._scrollBar.reset();
       EventHandler.off(DATEPICKER_CANCEL_BTN, 'mousedown');
     });
   }
@@ -359,9 +382,10 @@ class Datetimepicker {
 
     if (!this._options.inline) {
       Manipulator.addClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
+      this._scrollBar.hide();
     }
 
-    if (this._options.inline) {
+    if (this._options.inline || this._options.datepicker.inline) {
       this._openDropdownDate();
     }
     this._addIconButtons();
@@ -388,6 +412,7 @@ class Datetimepicker {
         const timepicker = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-wrapper`, document.body);
         if (!timepicker) {
           Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
+          this._scrollBar.reset();
         }
       }, 10);
       if (this._options.inline) {
@@ -398,7 +423,34 @@ class Datetimepicker {
     const CLOCK_BTN = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-button-toggle`, document.body);
     EventHandler.on(CLOCK_BTN, 'click', () => {
       this._datepicker.close();
+      this._scrollBar.hide();
       EventHandler.trigger(this._datepicker._element, EVENT_CLOSE_DATEPICKER);
+    });
+  }
+
+  _handleTimepickerDisablePast() {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    EventHandler.on(this._datepicker._element, 'dateChange.mdb.datepicker', () => {
+      if (this._datepicker._selectedDate.getTime() === currentDate.getTime()) {
+        this._timepicker.update({ disablePast: true });
+      } else {
+        this._timepicker.update({ disablePast: false });
+      }
+    });
+  }
+
+  _handleTimepickerDisableFuture() {
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0);
+
+    EventHandler.on(this._datepicker._element, 'dateChange.mdb.datepicker', () => {
+      if (this._datepicker._selectedDate.getTime() === currentDate.getTime()) {
+        this._timepicker.update({ disableFuture: true });
+      } else {
+        this._timepicker.update({ disableFuture: false });
+      }
     });
   }
 
@@ -408,6 +460,7 @@ class Datetimepicker {
         const timepicker = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-wrapper`, document.body);
         if (!timepicker) {
           Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
+          this._scrollBar.reset();
         }
       }, 250);
     });
@@ -417,12 +470,14 @@ class Datetimepicker {
     const CANCEL_BTN = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-cancel`, document.body);
     EventHandler.one(CANCEL_BTN, 'mousedown', () => {
       Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
+      this._scrollBar.reset();
     });
   }
 
   _openDropdownDate() {
     const datePopper = this._datepicker._popper;
     datePopper.state.elements.reference = this._input;
+    this._scrollBar.reset();
   }
 
   _openTimePicker() {
@@ -430,8 +485,9 @@ class Datetimepicker {
     setTimeout(() => {
       this._addIconButtons();
 
-      if (this._options.inline) {
+      if (this._options.inline || this._options.timepicker.inline) {
         this._openDropdownTime();
+        this._scrollBar.reset();
       }
       if (this._timepicker._modal) {
         const CANCEL_BTN = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-cancel`, document.body);
@@ -444,6 +500,7 @@ class Datetimepicker {
           ) {
             setTimeout(() => {
               Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
+              this._scrollBar.reset();
             }, 200);
           }
           if (e.target.classList.contains(`${CLASSNAME_TIMEPICKER}-clear`)) {
@@ -453,6 +510,7 @@ class Datetimepicker {
             EventHandler.trigger(CANCEL_BTN, 'click');
             setTimeout(() => {
               this._openDatePicker();
+              this._scrollBar.hide();
             }, 200);
           }
         });

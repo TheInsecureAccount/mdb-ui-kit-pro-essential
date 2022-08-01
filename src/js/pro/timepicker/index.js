@@ -1,6 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-else-return */
 import { createPopper } from '@popperjs/core';
+import ScrollBarHelper from '../../bootstrap/mdb-prefix/util/scrollbar';
 import {
   typeCheckConfig,
   getjQuery,
@@ -140,6 +141,8 @@ const DefaultType = {
   invalidLabel: 'string',
   maxHour: '(string|number)',
   minHour: '(string|number)',
+  maxTime: 'string',
+  minTime: 'string',
   modalID: 'string',
   okLabel: 'string',
   overflowHidden: 'boolean',
@@ -227,6 +230,8 @@ class Timepicker {
       this._options.format24 = true;
       this._currentTime = formatNormalHours(this._inputValue);
     }
+
+    this._scrollBar = new ScrollBarHelper();
 
     this._animations =
       !window.matchMedia('(prefers-reduced-motion: reduce)').matches && this._options.animations;
@@ -771,6 +776,7 @@ class Timepicker {
 
           if (!inline) {
             container.appendChild(div);
+            this._scrollBar.hide();
           } else {
             this._popper = createPopper(this.input, div, {
               placement: 'bottom-start',
@@ -821,20 +827,6 @@ class Timepicker {
             Manipulator.addStyle(this._minutes, {
               pointerEvents: '',
             });
-          }
-
-          if (overflowHidden) {
-            const hasVerticalScroll = window.innerWidth > document.documentElement.clientWidth;
-            Manipulator.addStyle(container, {
-              overflow: 'hidden',
-            });
-
-            if (!checkBrowser() && hasVerticalScroll) {
-              const scrollHeight = '15px';
-              Manipulator.addStyle(container, {
-                paddingRight: scrollHeight,
-              });
-            }
           }
 
           this._focusTrap = new FocusTrap(this._wrapper, {
@@ -1163,8 +1155,9 @@ class Timepicker {
               }
 
               if (
-                Number(this._hour.textContent) < Number(minTimeHour) &&
-                Number(this._minutes.textContent) === Number(minTimeMinutes)
+                (Number(this._hour.textContent) == Number(minTimeHour) &&
+                  Number(this._minutes.textContent) < Number(minTimeMinutes)) ||
+                Number(this._hour.textContent) < Number(minTimeHour)
               ) {
                 return;
               }
@@ -1860,9 +1853,11 @@ class Timepicker {
     if (this._animations) {
       setTimeout(() => {
         this._removeModalElements();
+        this._scrollBar.reset();
       }, 300);
     } else {
       this._removeModalElements();
+      this._scrollBar.reset();
     }
 
     EventHandlerMulti.off(
@@ -1875,14 +1870,6 @@ class Timepicker {
     const container = this._getContainer();
     if (this._modal) {
       this._modal.remove();
-    }
-    Manipulator.addStyle(container, {
-      overflow: '',
-    });
-    if (!checkBrowser()) {
-      Manipulator.addStyle(container, {
-        paddingRight: '',
-      });
     }
   }
 

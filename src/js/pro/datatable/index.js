@@ -384,6 +384,12 @@ class Datatable {
     this._setActiveSortIcon(icon);
   }
 
+  setActivePage(index) {
+    if (index < this.pages) {
+      this._changeActivePage(index);
+    }
+  }
+
   // Private
 
   _changeActivePage(index) {
@@ -866,6 +872,9 @@ class Datatable {
       }
     } else {
       this._selected = this._selected.filter((index) => index !== rowIndex);
+    }
+    if (this._options.multi && !e.target.checked) {
+      this._headerCheckbox.checked = false;
     }
 
     this._setActiveRows();

@@ -53,6 +53,14 @@ $sidenav-backdrop-background-color: rgba(0, 0, 0, 0.1) !default;
 
 $sidenav-light-color: $sidenav-data-color-light-color !default;
 
+$sidenav-subheading-font-size: 0.6rem !default;
+$sidenav-subheading-padding-y: 1rem !default;
+$sidenav-subheading-padding-x: 1.5rem !default;
+$sidenav-subheading-fw: 700 !default;
+
+$sidenav-sm-link-pt: 0.4rem !default;
+$sidenav-sm-link-pb: $sidenav-sm-link-pt !default;
+
 // Rating
 
 $rating-icon-padding: 0.25rem !default;
