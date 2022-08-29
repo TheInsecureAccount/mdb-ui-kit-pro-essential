@@ -18,7 +18,6 @@ const CLASSNAME_TIMEPICKER = 'timepicker';
 const CLASSNAME_TOGGLE_BUTTON = `${NAME}-toggle-button`;
 const CLASSNAME_INVALID_FEEDBACK = 'invalid-feedback';
 const CLASSNAME_IS_INVALID = 'is-invalid';
-const CLASSNAME_DATETIMEPICKER_OPEN = 'dateTimepicker-open';
 
 const SELECTOR_DATETIMEPICKER = `.${NAME}`;
 const SELECTOR_TIMEPICKER = `.${CLASSNAME_TIMEPICKER}`;
@@ -282,7 +281,6 @@ class Datetimepicker {
     );
 
     EventHandler.one(DATEPICKER_CANCEL_BTN, 'mousedown', () => {
-      Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
       this._cancel = true;
       this._scrollBar.reset();
       EventHandler.off(DATEPICKER_CANCEL_BTN, 'mousedown');
@@ -381,7 +379,6 @@ class Datetimepicker {
     this._datepicker.open();
 
     if (!this._options.inline) {
-      Manipulator.addClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
       this._scrollBar.hide();
     }
 
@@ -411,7 +408,6 @@ class Datetimepicker {
       setTimeout(() => {
         const timepicker = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-wrapper`, document.body);
         if (!timepicker) {
-          Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
           this._scrollBar.reset();
         }
       }, 10);
@@ -459,7 +455,6 @@ class Datetimepicker {
       setTimeout(() => {
         const timepicker = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-wrapper`, document.body);
         if (!timepicker) {
-          Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
           this._scrollBar.reset();
         }
       }, 250);
@@ -469,7 +464,6 @@ class Datetimepicker {
   _handleCancelButton() {
     const CANCEL_BTN = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-cancel`, document.body);
     EventHandler.one(CANCEL_BTN, 'mousedown', () => {
-      Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
       this._scrollBar.reset();
     });
   }
@@ -487,7 +481,6 @@ class Datetimepicker {
 
       if (this._options.inline || this._options.timepicker.inline) {
         this._openDropdownTime();
-        this._scrollBar.reset();
       }
       if (this._timepicker._modal) {
         const CANCEL_BTN = SelectorEngine.findOne(`${SELECTOR_TIMEPICKER}-cancel`, document.body);
@@ -499,7 +492,6 @@ class Datetimepicker {
             e.target.classList.contains(`${CLASSNAME_TIMEPICKER}-submit`)
           ) {
             setTimeout(() => {
-              Manipulator.removeClass(document.body, CLASSNAME_DATETIMEPICKER_OPEN);
               this._scrollBar.reset();
             }, 200);
           }
@@ -528,6 +520,7 @@ class Datetimepicker {
     const timePopper = this._timepicker._popper;
     timePopper.state.elements.reference = this._input;
     timePopper.update();
+    this._scrollBar.reset();
   }
 
   _setInitialDefaultInput() {

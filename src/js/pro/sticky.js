@@ -209,7 +209,7 @@ class Sticky {
     }
 
     if (this._options.stickyAnimationUnsticky) {
-      this._elementOffsetTop += this._element.height;
+      this._elementOffsetTop += this._element.height || 0;
     }
   }
 

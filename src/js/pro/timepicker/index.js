@@ -455,8 +455,8 @@ class Timepicker {
       let { maxHour, minHour } = this._options;
       const increment = this._options.increment;
 
-      minHour = setMinTime(minHour, disablePast, this._options.format12);
-      maxHour = setMaxTime(maxHour, disableFuture, this._options.format12);
+      minHour = setMinTime(minHour, this._options.disablePast, this._options.format12);
+      maxHour = setMaxTime(maxHour, this._options.disableFuture, this._options.format12);
 
       const notNullMinutes = SelectorEngine.findOne(`.${TIPS_MINUTES_CLASS}`) !== null;
       const notNullInnerHours = SelectorEngine.findOne(`.${TIPS_INNER_HOURS_CLASS}`) !== null;
@@ -1678,7 +1678,7 @@ class Timepicker {
             return;
           }
           const makeDegrees = () => {
-            if (checkBrowser() && degrees) {
+            if (checkBrowser() && degrees && elFromPoint) {
               const { degrees: touchDegrees, hour: touchHours } = this._makeHourDegrees(
                 elFromPoint,
                 degrees,

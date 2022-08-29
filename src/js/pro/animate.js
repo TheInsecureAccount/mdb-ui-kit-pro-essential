@@ -354,11 +354,11 @@ onDOMContentLoaded(() => {
   const $ = getjQuery();
 
   if ($) {
-    const JQUERY_NO_CONFLICT = $.fn[NAME];
-    $.fn[NAME] = Animate.jQueryInterface;
-    $.fn[NAME].Constructor = Animate;
-    $.fn[NAME].noConflict = () => {
-      $.fn[NAME] = JQUERY_NO_CONFLICT;
+    const JQUERY_NO_CONFLICT = $.fn.animate;
+    $.fn.animate = Animate.jQueryInterface;
+    $.fn.animate.Constructor = Animate;
+    $.fn.animate.noConflict = () => {
+      $.fn.animate = JQUERY_NO_CONFLICT;
       return Animate.jQueryInterface;
     };
   }

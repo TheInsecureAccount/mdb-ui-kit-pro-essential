@@ -55,9 +55,9 @@
     position: relative;
     &:not(:last-child):after {
       position: absolute;
-      left: 2.25rem;
+      left: 2.45rem;
       height: calc(100% - 2.45rem);
-      top: 3rem;
+      top: 3.25rem;
       width: 1px;
       margin-top: 0.5rem;
       content: '';
@@ -121,6 +121,16 @@
   .stepper-content {
     top: 2.56rem;
   }
+  .stepper-active {
+    .stepper-head-icon {
+      background-color: rgb(55, 111, 200);
+    }
+  }
+  .stepper-completed {
+    .stepper-head-icon {
+      background-color: rgb(19, 150, 71);
+    }
+  }
 }
 .stepper-form {
   display: inherit;
@@ -139,11 +149,14 @@
   line-height: 1.3;
   cursor: pointer;
   &:hover {
-    background-color: #dbdbdb;
+    background-color: rgba(0, 0, 0, 0.025);
   }
   &:focus {
     outline: none;
   }
+}
+.stepper-head-text {
+  color: $text-muted;
 }
 .stepper-head-text:after {
   display: flex;
@@ -154,15 +167,17 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: white;
-  background-color: gray;
+  background-color: rgb(235, 237, 239);
+  color: rgb(64, 70, 79);
   border-radius: 100%;
   font-size: 0.875rem;
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 1.938rem;
+  height: 1.938rem;
+  font-weight: 500;
 }
 .stepper-completed .stepper-head-icon {
-  background-color: $success;
+  background-color: rgb(214, 240, 224);
+  color: rgb(13, 104, 50);
 }
 .stepper-active {
   .stepper-head-text {
@@ -172,19 +187,22 @@
     display: block;
   }
   .stepper-head-icon {
-    background-color: $primary;
+    background-color: rgb(223, 231, 246);
+    color: rgb(44, 88, 160);
   }
 }
 .stepper-invalid .stepper-head-icon {
-  background-color: $danger;
+  background-color: rgb(249, 225, 229);
+  color: rgb(175, 35, 58);
 }
 .stepper-disabled {
   .stepper-head {
-    color: #858585;
+    color: #808080;
     cursor: default;
   }
   .stepper-head-icon {
-    background-color: #858585;
+    background-color: #e6e6e6;
+    color: #808080;
   }
 }
 .stepper-mobile-head {

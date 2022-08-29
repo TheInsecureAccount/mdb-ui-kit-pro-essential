@@ -76,14 +76,14 @@ const DEFAULT_OPTIONS = {
     options: {
       elements: {
         line: {
-          backgroundColor: 'rgba(66, 133, 244, 0.0)',
-          borderColor: 'rgb(66, 133, 244)',
+          backgroundColor: 'rgba(59, 112, 202, 0.0)',
+          borderColor: 'rgb(59, 112, 202)',
           borderWidth: 2,
           tension: 0.0,
         },
         point: {
-          borderColor: 'rgb(66, 133, 244)',
-          backgroundColor: 'rgb(66, 133, 244)',
+          borderColor: 'rgb(59, 112, 202)',
+          backgroundColor: 'rgb(59, 112, 202)',
         },
       },
       responsive: true,
@@ -125,7 +125,7 @@ const DEFAULT_OPTIONS = {
   },
   bar: {
     options: {
-      backgroundColor: 'rgb(66, 133, 244)',
+      backgroundColor: 'rgb(59, 112, 202)',
       borderWidth: 0,
       responsive: true,
       legend: {
@@ -164,7 +164,7 @@ const DEFAULT_OPTIONS = {
   pie: {
     options: {
       elements: {
-        arc: { backgroundColor: 'rgb(66, 133, 244)' },
+        arc: { backgroundColor: 'rgb(59, 112, 202)' },
       },
       responsive: true,
       legend: {
@@ -175,7 +175,7 @@ const DEFAULT_OPTIONS = {
   doughnut: {
     options: {
       elements: {
-        arc: { backgroundColor: 'rgb(66, 133, 244)' },
+        arc: { backgroundColor: 'rgb(59, 112, 202)' },
       },
       responsive: true,
       legend: {
@@ -186,7 +186,7 @@ const DEFAULT_OPTIONS = {
   polarArea: {
     options: {
       elements: {
-        arc: { backgroundColor: 'rgba(66, 133, 244, 0.5)' },
+        arc: { backgroundColor: 'rgba(59, 112, 202, 0.5)' },
       },
       responsive: true,
       legend: {
@@ -198,13 +198,13 @@ const DEFAULT_OPTIONS = {
     options: {
       elements: {
         line: {
-          backgroundColor: 'rgba(66, 133, 244, 0.5)',
-          borderColor: 'rgb(66, 133, 244)',
+          backgroundColor: 'rgba(59, 112, 202, 0.5)',
+          borderColor: 'rgb(59, 112, 202)',
           borderWidth: 2,
         },
         point: {
-          borderColor: 'rgb(66, 133, 244)',
-          backgroundColor: 'rgb(66, 133, 244)',
+          borderColor: 'rgb(59, 112, 202)',
+          backgroundColor: 'rgb(59, 112, 202)',
         },
       },
       responsive: true,
@@ -217,14 +217,14 @@ const DEFAULT_OPTIONS = {
     options: {
       elements: {
         line: {
-          backgroundColor: 'rgba(66, 133, 244, 0.5)',
-          borderColor: 'rgb(66, 133, 244)',
+          backgroundColor: 'rgba(59, 112, 202, 0.5)',
+          borderColor: 'rgb(59, 112, 202)',
           borderWidth: 2,
           tension: 0.0,
         },
         point: {
-          borderColor: 'rgb(66, 133, 244)',
-          backgroundColor: 'rgba(66, 133, 244, 0.5)',
+          borderColor: 'rgb(59, 112, 202)',
+          backgroundColor: 'rgba(59, 112, 202, 0.5)',
         },
       },
       responsive: true,
@@ -268,8 +268,8 @@ const DEFAULT_OPTIONS = {
     options: {
       elements: {
         point: {
-          borderColor: 'rgb(66, 133, 244)',
-          backgroundColor: 'rgba(66, 133, 244, 0.5)',
+          borderColor: 'rgb(59, 112, 202)',
+          backgroundColor: 'rgba(59, 112, 202, 0.5)',
         },
       },
       responsive: true,

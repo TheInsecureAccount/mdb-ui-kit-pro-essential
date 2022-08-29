@@ -28,7 +28,7 @@
   outline: 0;
 
   & ~ .autocomplete-label {
-    color: #1266f1;
+    color: $primary;
   }
 
   &::placeholder {
